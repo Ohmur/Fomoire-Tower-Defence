@@ -13,8 +13,10 @@ class Gameboard:
         self.height = 20
         self.width = 50
         self.startingLives = 10
-        self.startingMoney = 100
+        self.currentLives = self.startingLives
+        self.money = 100
         self.noOfWaves = 0
+        self.currentWave = 1
         self.waves = []
         self.towersAvailable = [] 
         self.enemyPath = []
@@ -53,7 +55,9 @@ class Gameboard:
                                         raise CorruptedMapFileError("Reading map size failed.")  
                                 elif line_parts[0].strip().lower() == "lives":
                                     try:
-                                        self.setStartingLives(int(line_parts[1].strip()))
+                                        lives = int(line_parts[1].strip())
+                                        self.setCurrentLives(lives)
+                                        self.setStartingLives(lives)
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading starting lives failed.")
                                 elif line_parts[0].strip().lower() == "money":
@@ -65,7 +69,7 @@ class Gameboard:
                                     towerlist = line_parts[1].split(",")
                                     for tower in towerlist:
                                         self.towersAvailable.append(tower.strip().lower())
-                                        #I have to add a method to check if the tower name is correct before adding it.
+                                        #I have to add code that checks if the tower name is correct before adding it.
                                     
                             current_line = mapData.readline()
                                     
@@ -152,18 +156,55 @@ class Gameboard:
         
     def setStartingLives(self, lives):
         self.startingLives = lives
+
+    def setCurrentLives(self, lives):
+        self.currentLives = lives
     
     def setStartingMoney(self, money):
-        self.startingMoney = money
+        self.money = money
     
     def setNoOfWaves(self, waves):
         self.noOfWaves = waves
+    
+    def getRoad(self):
+        return self.road
+    
+    def getRiver(self):
+        return self.river
+    
+    def getWidth(self):
+        return self.width
+    
+    def getHeight(self):
+        return self.height
+    
+    def getName(self):
+        return self.name
+    
+    def getTowers(self):
+        return self.towersAvailable
+    
+    def getMoney(self):
+        return self.money
+    
+    def getCurrentWave(self):
+        return self.currentWave
+    
+    def getNoOfWaves(self):
+        return self.noOfWaves
+    
+    def getCurrentLives(self):
+        return self.currentLives
+    
+    def getStartingLives(self):
+        return self.startingLives
         
     def printMapInfo(self):
+        #I made this to check if the readMapData method worked properly.
         print("Map name " + str(self.name) + "\n"
               +"Height " + str(self.height) + " and width " + str(self.width) + "\n"
               +"Starting lives " + str(self.startingLives) + "\n"
-              +"Starting money " + str(self.startingMoney) + "\n"
+              +"Starting money " + str(self.money) + "\n"
               +"Number of Waves " + str(self.noOfWaves) + "\n"
               +"Waves " + str(self.waves) + "\n"
               +"Towers" + str(self.towersAvailable) + "\n"
@@ -171,12 +212,4 @@ class Gameboard:
               +"River " + str(self.river) + "\n"
               +"Occupied " + str(self.occupied) + "\n"
               +"Unoccupied " + str(self.unoccupied))
-
-def main():
-    
-    gameboard1 = Gameboard()
-    gameboard1.readMapData("Map1.txt")
-    gameboard1.printMapInfo()
-
-main()
     
