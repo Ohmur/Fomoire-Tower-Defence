@@ -18,7 +18,8 @@ class Gameboard:
         self.noOfWaves = 0
         self.currentWave = 1
         self.waves = []
-        self.towersAvailable = [] 
+        self.towersAvailable = []
+        self.towersBuild = []
         self.enemyPath = []
         self.river = []
         self.occupied = []
@@ -187,6 +188,9 @@ class Gameboard:
     def getMoney(self):
         return self.money
     
+    def buy(self, cost):
+        self.money -= cost
+    
     def getCurrentWave(self):
         return self.currentWave
     
@@ -198,6 +202,22 @@ class Gameboard:
     
     def getStartingLives(self):
         return self.startingLives
+    
+    def getOccupied(self):
+        return self.occupied 
+    
+    def addToOccupied(self, coordinates):
+        self.occupied.append(coordinates)
+        
+    def getUnoccupied(self):
+        return self.unoccupied
+    
+    def addBuildTower(self, tower):
+        self.towersBuild.append(tower)
+    
+    def getBuildTowers(self):
+        return self.towersBuild
+        
         
     def printMapInfo(self):
         #I made this to check if the readMapData method worked properly.
