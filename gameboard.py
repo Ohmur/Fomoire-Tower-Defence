@@ -217,6 +217,9 @@ class Gameboard:
     
     def getBuildTowers(self):
         return self.towersBuild
+    
+    def removeFromUnoccupied(self, coordinates):
+        self.unoccupied.remove(coordinates)
         
         
     def printMapInfo(self):

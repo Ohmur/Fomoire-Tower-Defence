@@ -11,6 +11,8 @@ roadColor =  QColor(223, 207, 141, 255)
 riverColor = QColor(10, 37, 145, 255)
 grassColor = QColor(41, 181, 20, 255)
 gridColor = QColor(4, 97, 1, 150)
+rangePenColor = QColor(25, 81, 0, 150)
+rangeBrushColor = QColor(11, 118, 108, 140)
 towerButtonSize = 40
 
 isPaused = False

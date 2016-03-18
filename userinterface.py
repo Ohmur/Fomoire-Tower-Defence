@@ -21,6 +21,8 @@ class UserInterface(QMainWindow):
         self.gameboard = Gameboard()
         
         self.isTowerSelected = False
+        self.isTowerHovered = False
+        self.towerBeingHovered = None
         self.selectedTower = None
         
         self.gameboard.readMapData("Map1.txt")
@@ -63,9 +65,21 @@ class UserInterface(QMainWindow):
     def setSelectedTower(self, towerType):
         self.selectedTower = towerType
     
+    
+    def getIsTowerBeingHovered(self):
+        return self.isTowerHovered
+    
+    def getTowerBeingHovered(self):
+        return self.towerBeingHovered
+    
+    def setIsTowerBeingHovered(self, boolean, tower):
+        self.isTowerHovered = boolean
+        self.towerBeingHovered = tower
+    
 
     def getGameStats(self):
         return self.gameStats
+
 
 class MapView(QFrame):
     
@@ -87,6 +101,10 @@ class MapView(QFrame):
         qp = QPainter()
         qp.begin(self)
         self.drawMap(qp)
+        
+        if self.parent.getIsTowerSelected() == False and self.parent.getIsTowerBeingHovered():
+            self.drawTowerRange(self.parent.getTowerBeingHovered(), qp)
+        
         qp.end()
         
         
@@ -125,6 +143,7 @@ class MapView(QFrame):
                     closest_corner_x = 0
                     closest_corner_y = 0
                     
+                    #we calculate the closest grid corner from where the mouse was clicked
                     if mouse_x % 20 < 10:
                         closest_corner_x = mouse_x - (mouse_x % 20)
                     else:
@@ -135,38 +154,51 @@ class MapView(QFrame):
                     else:
                         closest_corner_y = mouse_y + (20 - mouse_x % 20)
                     
+                    #then we calculate the grid blocks for the tower
                     block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
-                    block2 = [block1[0] - 1, block1[1]]
-                    block3 = [block1[0] - 1, block1[1] - 1]
-                    block4 = [block1[0], block1[1] - 1]
                     
-                    blocks = [block1, block2, block3, block4]
-                    
-                    occupied = self.parent.getGameboard().getOccupied()
-                    
-                    if block1 not in occupied and block2 not in occupied and block3 not in occupied and block4 not in occupied:
-                        #draws the tower on the map
-                        #can draw outside of map at the moment
-                        tower_pic = self.parent.getSelectedTower().getPicture()
-                        placedTower = QLabel(self)
-                        placedTower.setPixmap(tower_pic)
-                        placedTower.move(block3[0] * 20, block3[1] * 20)
-                        placedTower.show()
+                    if block1[0] > 0 and block1[1] > 0:
+                        block2 = [block1[0] - 1, block1[1]]
+                        block3 = [block1[0] - 1, block1[1] - 1]
+                        block4 = [block1[0], block1[1] - 1]
+                        
+                        blocks = [block1, block2, block3, block4]
+                        occupied = self.parent.getGameboard().getOccupied()
+                        canPlaceTower = True
                         
                         for block in blocks:
-                            self.parent.getGameboard().addToOccupied(block)
+                            if block in occupied:
+                                canPlaceTower = False
+                                
+                        if canPlaceTower == True:
+                            #places the tower on the map
+                            tower = self.parent.getSelectedTower()
+                            tower.setPosition(closest_corner_x, closest_corner_y)
+                            
+                            #tower_pic = self.parent.getSelectedTower().getPicture()
+                            placedTower = ClickableTower(tower, self)
+                            #placedTower.setPixmap(tower_pic)
+                            placedTower.move(block3[0] * 20, block3[1] * 20)
+                            placedTower.show()
+                            
+                            for block in blocks:
+                                self.parent.getGameboard().addToOccupied(block)
+                            
+                            self.parent.getGameboard().addBuildTower(tower)    
+                            self.parent.getGameboard().buy(tower.getPrice())
+                            self.parent.getGameStats().update()
+                            
+                            self.parent.statusBar().showMessage('Tower build') 
+                            self.parent.setSelectedTower(None)
+                            self.parent.setIsTowerSelected(False)
+                            
                         
-                        self.parent.getGameboard().addBuildTower(self.parent.getSelectedTower())    
-                        self.parent.getGameboard().buy(self.parent.getSelectedTower().getPrice())
-                        self.parent.getGameStats().update()
-                        
-                        self.parent.statusBar().showMessage('Tower build') 
-                        self.parent.setSelectedTower(None)
-                        self.parent.setIsTowerSelected(False)
-                    
+                        else:
+                            self.parent.statusBar().showMessage("Can't place it there")
+                            
                     else:
-                        self.parent.statusBar().showMessage("Can't place it there")    
-                
+                            self.parent.statusBar().showMessage("Can't place it there")          
+                    
                 else:
                     self.parent.setSelectedTower(None)
                     self.parent.setIsTowerSelected(False)
@@ -176,7 +208,21 @@ class MapView(QFrame):
             self.parent.setSelectedTower(None)
             self.parent.setIsTowerSelected(False)
             self.parent.statusBar().showMessage('No tower selected')
+       
                 
+    def drawTowerRange(self, tower, painter):
+        
+        painter.setPen(rangePenColor)
+        painter.setBrush(rangeBrushColor)
+        towerRange = tower.getRange()
+        x = tower.getPositionX()
+        y = tower.getPositionY()
+        painter.drawEllipse(QPoint(x, y), towerRange, towerRange)
+        
+    
+    def getParent(self):
+        return self.parent
+    
             
 class BottomButtons(QFrame):
     
@@ -207,13 +253,13 @@ class BottomButtons(QFrame):
         buttons = 0
         while i < len(towers):
             if towers[i] == "t1":
-                self.musketeerButton = PictureButton(QPixmap("musketeer.png"), QPixmap("musketeer_hover.png"), QPixmap("musketeer_pressed.png"), self)
+                self.musketeerButton = BuyButton(QPixmap("musketeer.png"), QPixmap("musketeer_hover.png"), QPixmap("musketeer_pressed.png"), self)
                 self.musketeerButton.move(buttons*towerButtonSize + 10, 10)
                 self.musketeerButton.clicked.connect(self.musketeerButtonClick)
                 hbox.addWidget(self.musketeerButton)
                 buttons += 1
             elif towers[i] == "t2":
-                self.cannonButton = PictureButton(QPixmap("cannon.png"), QPixmap("cannon_hover.png"), QPixmap("cannon_pressed.png"), self)
+                self.cannonButton = BuyButton(QPixmap("cannon.png"), QPixmap("cannon_hover.png"), QPixmap("cannon_pressed.png"), self)
                 self.cannonButton.move(buttons*towerButtonSize + 10, 10)
                 self.cannonButton.clicked.connect(self.cannonButtonClick)
                 hbox.addWidget(self.cannonButton)
@@ -285,11 +331,11 @@ class GameStats(QFrame):
         qp.drawText(event.rect(), Qt.AlignRight, "Lives " + str(self.parent.getGameboard().getCurrentLives()) + "/" + str(self.parent.getGameboard().getStartingLives()))
 
      
-class PictureButton(QAbstractButton):
+class BuyButton(QAbstractButton):
 
     
-    def __init__(self, pixmap,pixmap_hover, pixmap_pressed, parent):
-        super(PictureButton, self).__init__(parent)
+    def __init__(self, pixmap, pixmap_hover, pixmap_pressed, parent):
+        super(BuyButton, self).__init__(parent)
         self.pixmap = pixmap
         self.pixmap_hover = pixmap_hover
         self.pixmap_pressed = pixmap_pressed
@@ -319,6 +365,51 @@ class PictureButton(QAbstractButton):
         return self.pixmap.size()
 
 
+class ClickableTower(QAbstractButton):
+    
+    def __init__(self, tower, parent):
+        super(ClickableTower, self).__init__(parent)
+        self.pixmap = tower.getPicture()
+        self.parent = parent
+        self.tower = tower
+    
+    
+    def paintEvent(self, event):
+        
+        pix = self.pixmap
+        painter = QPainter()
+        painter.begin(self)
+        painter.drawPixmap(event.rect(), pix)
+        
+        if self.underMouse():
+            
+            self.parent.getParent().setIsTowerBeingHovered(True, self.tower)
+            self.parent.getParent().update()
+               
+        else:
+            
+            self.parent.getParent().setIsTowerBeingHovered(False, None)
+            self.parent.update()
+            
+        painter.end()
+    
+    
+    def enterEvent(self, event):
+        self.update()
+
+
+    def leaveEvent(self, event):
+        self.update()
+    
+    
+    def sizeHint(self):
+        return self.pixmap.size()
+
+
+    def towerClick(self):
+        #Should open a menu to upgrade tower, and to see it's stats somewhere.
+        return -1
+        
         
 if __name__ == '__main__':
     

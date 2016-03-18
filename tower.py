@@ -34,6 +34,16 @@ class Tower(object):
     
     def getPicture(self):
         return self.picture
+    
+    def setPosition(self, x, y):
+        self.position_x = x
+        self.position_y = y
+        
+    def getPositionX(self):
+        return self.position_x
+    
+    def getPositionY(self):
+        return self.position_y
         
 
 class Musketeer(Tower):
