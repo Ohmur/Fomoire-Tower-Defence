@@ -69,8 +69,10 @@ class UserInterface(QMainWindow):
     def getIsTowerBeingHovered(self):
         return self.isTowerHovered
     
+    
     def getTowerBeingHovered(self):
         return self.towerBeingHovered
+    
     
     def setIsTowerBeingHovered(self, boolean, tower):
         self.isTowerHovered = boolean
@@ -87,12 +89,15 @@ class MapView(QFrame):
         super(MapView, self).__init__(parent)
         self.parent = parent
         self.initUI(self.parent.getGameboard())
+        self.mouse_x = 0
+        self.mouse_y = 0
     
         
     def initUI(self, gameboard): 
 
         #self.setStyleSheet("QWidget { background: #5ea352    }")
         self.setFixedSize(gameboard.getWidth()*blockSize, gameboard.getHeight()*blockSize)
+        self.setMouseTracking(True)
         self.show()
     
     
@@ -102,8 +107,11 @@ class MapView(QFrame):
         qp.begin(self)
         self.drawMap(qp)
         
-        if self.parent.getIsTowerSelected() == False and self.parent.getIsTowerBeingHovered():
+        if (self.parent.getIsTowerSelected() == False) and self.parent.getIsTowerBeingHovered():
             self.drawTowerRange(self.parent.getTowerBeingHovered(), qp)
+        
+        if self.underMouse() and self.parent.getIsTowerSelected():
+            self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
         qp.end()
         
@@ -137,22 +145,10 @@ class MapView(QFrame):
                 #check mouse location, check money, build a tower
                 if self.parent.getSelectedTower().getPrice() <= self.parent.getGameboard().getMoney():
                 
-                    mouse_x = e.pos().x()
-                    mouse_y = e.pos().y()
+                    self.mouse_x = e.pos().x()
+                    self.mouse_y = e.pos().y()
                     
-                    closest_corner_x = 0
-                    closest_corner_y = 0
-                    
-                    #we calculate the closest grid corner from where the mouse was clicked
-                    if mouse_x % 20 < 10:
-                        closest_corner_x = mouse_x - (mouse_x % 20)
-                    else:
-                        closest_corner_x = mouse_x + (20 - mouse_x % 20)
-                        
-                    if mouse_y % 20 < 10:
-                        closest_corner_y = mouse_y - (mouse_y % 20)
-                    else:
-                        closest_corner_y = mouse_y + (20 - mouse_x % 20)
+                    closest_corner_x, closest_corner_y = self.calculateClosestCorner(self.mouse_x, self.mouse_y)
                     
                     #then we calculate the grid blocks for the tower
                     block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
@@ -207,9 +203,35 @@ class MapView(QFrame):
         else:
             self.parent.setSelectedTower(None)
             self.parent.setIsTowerSelected(False)
-            self.parent.statusBar().showMessage('No tower selected')
-       
-                
+            self.parent.statusBar().showMessage('')
+    
+    
+    def mouseMoveEvent(self, event):
+        
+        if self.underMouse():
+            self.mouse_x, self.mouse_y = self.calculateClosestCorner(event.pos().x(), event.pos().y())
+            self.update()
+            
+    
+    def calculateClosestCorner(self, mouse_x, mouse_y):
+                    
+        closest_corner_x = 0
+        closest_corner_y = 0
+                    
+        #we calculate the closest grid corner from where the mouse was clicked
+        if mouse_x % 20 < 10:
+            closest_corner_x = mouse_x - (mouse_x % 20)
+        else:
+            closest_corner_x = mouse_x + (20 - mouse_x % 20)
+                        
+        if mouse_y % 20 < 10:
+            closest_corner_y = mouse_y - (mouse_y % 20)
+        else:
+            closest_corner_y = mouse_y + (20 - mouse_x % 20)
+            
+        return closest_corner_x, closest_corner_y
+        
+        
     def drawTowerRange(self, tower, painter):
         
         painter.setPen(rangePenColor)
@@ -218,7 +240,13 @@ class MapView(QFrame):
         x = tower.getPositionX()
         y = tower.getPositionY()
         painter.drawEllipse(QPoint(x, y), towerRange, towerRange)
-        
+    
+    
+    def drawTowerOutline(self, x, y, painter):
+        painter.setPen(rangePenColor)
+        painter.setBrush(rangeBrushColor)
+        painter.drawRect(x - 20, y - 20, 40, 40)
+    
     
     def getParent(self):
         return self.parent
