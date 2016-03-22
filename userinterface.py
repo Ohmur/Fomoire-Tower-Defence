@@ -8,7 +8,7 @@ import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QFrame, QPushButton, QAbstractButton, QLabel, QMainWindow
 from PyQt5.QtGui import QPainter, QColor, QPixmap, QDrag
 from globals import *
-from PyQt5.QtCore import Qt, QMimeData
+from PyQt5.QtCore import Qt
 from gameboard import Gameboard
 from tower import *
 from PyQt5.Qt import QHBoxLayout, QVBoxLayout
@@ -107,7 +107,7 @@ class MapView(QFrame):
         qp.begin(self)
         self.drawMap(qp)
         
-        if (self.parent.getIsTowerSelected() == False) and self.parent.getIsTowerBeingHovered():
+        if not self.parent.getIsTowerSelected() and self.parent.getIsTowerBeingHovered():
             self.drawTowerRange(self.parent.getTowerBeingHovered(), qp)
         
         if self.underMouse() and self.parent.getIsTowerSelected():
@@ -227,7 +227,7 @@ class MapView(QFrame):
         if mouse_y % 20 < 10:
             closest_corner_y = mouse_y - (mouse_y % 20)
         else:
-            closest_corner_y = mouse_y + (20 - mouse_x % 20)
+            closest_corner_y = mouse_y + (20 - mouse_y % 20)
             
         return closest_corner_x, closest_corner_y
         
@@ -401,6 +401,8 @@ class ClickableTower(QAbstractButton):
         self.parent = parent
         self.tower = tower
     
+        self.pressed.connect(self.towerClick)
+    
     
     def paintEvent(self, event):
         
@@ -409,25 +411,15 @@ class ClickableTower(QAbstractButton):
         painter.begin(self)
         painter.drawPixmap(event.rect(), pix)
         
-        if self.underMouse():
-            
-            self.parent.getParent().setIsTowerBeingHovered(True, self.tower)
-            self.parent.getParent().update()
-               
-        else:
-            
-            self.parent.getParent().setIsTowerBeingHovered(False, None)
-            self.parent.update()
-            
-        painter.end()
-    
     
     def enterEvent(self, event):
-        self.update()
+        self.parent.getParent().setIsTowerBeingHovered(True, self.tower)
+        self.parent.getParent().update()
 
 
     def leaveEvent(self, event):
-        self.update()
+        self.parent.getParent().setIsTowerBeingHovered(False, None)
+        self.parent.getParent().update()
     
     
     def sizeHint(self):
@@ -436,7 +428,7 @@ class ClickableTower(QAbstractButton):
 
     def towerClick(self):
         #Should open a menu to upgrade tower, and to see it's stats somewhere.
-        return -1
+        self.parent.getParent().statusBar().showMessage("Tower clicked")
         
         
 if __name__ == '__main__':
