@@ -13,11 +13,10 @@ class Tower(object):
     def __init__(self):
         self.position_x = 0
         self.position_y = 0
-        self.level = 1
 
     
     def getCenter(self):
-        return QPoint(self.position_x + (self.size*20/2), self.position_y + self.size*20/2)
+        return QPoint(self.position_x, self.position_y)
     
     
     def getRange(self):
@@ -35,27 +34,64 @@ class Tower(object):
     def getPicture(self):
         return self.picture
     
+    
     def setPosition(self, x, y):
         self.position_x = x
         self.position_y = y
         
+        
     def getPositionX(self):
         return self.position_x
     
+    
     def getPositionY(self):
         return self.position_y
-        
+    
+    
+    def getPower(self):
+        return self.power
+    
+    
+    def getFireRate(self):
+        return self.fireRate
+    
+    
+    def getName(self):
+        return self.name
+    
+    
+    def getUpgradePrice(self):
+        return self.upgradeCost
+    
+    
+    def getLevel(self):
+        return self.level
+
+    
+    def getMaxLevel(self):
+        return self.maxLevel
+
 
 class Musketeer(Tower):
     
     def __init__(self):
         self.name = "Musketeer"
-        self.range = 50
-        self.fireRate = 10
+        self.range = 65
+        self.fireRate = 2
         self.cost = 100
-        self.damage = 40
+        self.upgradeCost = 120
+        self.power = 40
         self.size = 2
+        self.level = 1
+        self.maxLevel = 2
         self.picture = QPixmap("musketeer.png")
+    
+    
+    def upgrade(self):
+        self.power += self.power / 4
+        self.range += self.range / 3
+        self.fireRate -= 1
+        self.level += 1
         
 
 class Cannon(Tower):
@@ -63,8 +99,17 @@ class Cannon(Tower):
     def __init__(self):    
         self.name = "Cannon"
         self.range = 100
-        self.fireRate = 30
+        self.fireRate = 3
         self.cost = 150
-        self.damage = 80
+        self.upgradeCost = 120
+        self.power = 80
         self.size = 2
+        self.level = 1
+        self.maxLevel = 2
         self.picture = QPixmap("cannon.png")
+        
+    def upgrade(self):
+        self.power += self.power / 2
+        self.range += self.range / 4
+        self.fireRate -= 1
+        self.level += 1

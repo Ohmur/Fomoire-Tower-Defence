@@ -11,7 +11,7 @@ from globals import *
 from PyQt5.QtCore import Qt, QBasicTimer
 from gameboard import Gameboard
 from tower import *
-from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer
+from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer, QGridLayout
         
 
 class UserInterface(QMainWindow):
@@ -94,6 +94,7 @@ class MapView(QFrame):
         self.initUI(self.parent.getGameboard())
         self.mouse_x = 0
         self.mouse_y = 0
+        self.clickedTower = None
     
         
     def initUI(self, gameboard): 
@@ -252,6 +253,67 @@ class MapView(QFrame):
     def getParent(self):
         return self.parent
     
+        
+    def statusBarMessage(self, message):
+        self.parent.statusBar().showMessage(message)
+    
+    
+    def towerClick(self, tower):
+        #Should open a menu to upgrade tower, and to see it's stats somewhere.
+        self.clickedTower = tower
+        self.parent.statusBar().showMessage("Tower clicked")
+        self.popUp = QFrame()
+        self.popUp.setGeometry(500, 500, 100, 100)
+        
+        grid = QGridLayout()
+        self.popUp.setLayout(grid)
+        
+        towerStats = QLabel(tower.getName() + " Tower Stats", self)
+        power = QLabel("Power: " + str(tower.getPower()), self)
+        towerRange = QLabel("Range: " + str(tower.getRange()), self)
+        fireRate = QLabel("Rate of Fire: " + str(tower.getFireRate()), self)
+        level = QLabel("Level: " + str(tower.getLevel()), self)
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(towerStats)
+        vbox.addWidget(power)
+        vbox.addWidget(towerRange)
+        vbox.addWidget(fireRate)
+        vbox.addWidget(level)
+        
+        grid.addLayout(vbox, 0, 0)
+        
+        upgradeButton = QPushButton("Upgrade for " + str(tower.getUpgradePrice()))
+        doneButton = QPushButton("Done")
+        
+        vbox2 = QVBoxLayout()
+        
+        vbox2.addWidget(upgradeButton)
+        vbox2.addWidget(doneButton)
+        
+        grid.addLayout(vbox2, 0, 1)
+        
+        self.popUp.show()
+        
+        upgradeButton.clicked.connect(self.upgrade)
+        doneButton.clicked.connect(self.popUp.deleteLater)
+    
+    
+    def upgrade(self):
+        
+        if self.clickedTower.getMaxLevel() > self.clickedTower.getLevel():
+            
+            if self.parent.getGameboard().getMoney() >= self.clickedTower.getUpgradePrice():
+                self.clickedTower.upgrade()
+                self.parent.getGameboard().buy(self.clickedTower.getUpgradePrice())
+                self.statusBarMessage("Tower upgraded.")
+        
+            else:
+                self.statusBarMessage("Not enough money to upgrade.")
+        
+        else:
+            self.statusBarMessage("Tower already at maximum level.")
+            
             
 class BottomButtons(QFrame):
     
@@ -269,9 +331,13 @@ class BottomButtons(QFrame):
         
     def initUI(self, gameboard): 
         
-        hbox = QHBoxLayout()
-        self.setStyleSheet("QWidget { background: #D1D1D1}") 
         
+        self.setStyleSheet("QWidget { background: #D1D1D1}")
+        self.setFixedSize(gameboard.getWidth()*blockSize, 100)
+        grid = QGridLayout()
+        self.setLayout(grid)
+        
+        hbox = QHBoxLayout()
         vbox = QVBoxLayout()
         
         buildLabel = QLabel('Build', self)
@@ -280,8 +346,7 @@ class BottomButtons(QFrame):
         
         vbox.addStretch()
         vbox.addLayout(hbox)
-        self.setLayout(vbox)
-        
+        grid.addLayout(vbox, 0, 0)
         
 
         towers = gameboard.getTowers()
@@ -290,27 +355,36 @@ class BottomButtons(QFrame):
         while i < len(towers):
             if towers[i] == "t1":
                 self.musketeerButton = BuyButton(QPixmap("musketeer.png"), QPixmap("musketeer_hover.png"), QPixmap("musketeer_pressed.png"), self)
-                self.musketeerButton.move(buttons*towerButtonSize + 10, 10)
+                self.musketeerButton.move(buttons*towerButtonSize + 10, 50)
                 self.musketeerButton.clicked.connect(self.musketeerButtonClick)
                 hbox.addWidget(self.musketeerButton)
                 buttons += 1
             elif towers[i] == "t2":
                 self.cannonButton = BuyButton(QPixmap("cannon.png"), QPixmap("cannon_hover.png"), QPixmap("cannon_pressed.png"), self)
-                self.cannonButton.move(buttons*towerButtonSize + 10, 10)
+                self.cannonButton.move(buttons*towerButtonSize + 10, 50)
                 self.cannonButton.clicked.connect(self.cannonButtonClick)
                 hbox.addWidget(self.cannonButton)
                 buttons += 1
             i += 1
         
-          
         hbox.addStretch()
+        
+        
+        hbox2 = QHBoxLayout()
+        vbox2 = QVBoxLayout()
+        hbox2.addStretch()
+        
         self.lcd = QLCDNumber(self)
-        hbox.addWidget(self.lcd)
-        hbox.addStretch()
+        
+        vbox2.addWidget(self.lcd)
+        vbox2.addStretch()
         
         self.pauseButton = QPushButton("Pause", self)
         self.pauseButton.clicked.connect(self.pauseGame)
-        hbox.addWidget(self.pauseButton)
+    
+        vbox2.addWidget(self.pauseButton)
+        
+        grid.addLayout(vbox2, 0, 1)
         
         self.show()
         
@@ -427,7 +501,7 @@ class ClickableTower(QAbstractButton):
         self.parent = parent
         self.tower = tower
     
-        self.pressed.connect(self.towerClick)
+        self.pressed.connect(self.click)
     
     
     def paintEvent(self, event):
@@ -451,10 +525,9 @@ class ClickableTower(QAbstractButton):
     def sizeHint(self):
         return self.pixmap.size()
 
-
-    def towerClick(self):
-        #Should open a menu to upgrade tower, and to see it's stats somewhere.
-        self.parent.getParent().statusBar().showMessage("Tower clicked")
+    
+    def click(self):
+        self.parent.towerClick(self.tower)
         
         
 if __name__ == '__main__':
