@@ -15,6 +15,4 @@ rangePenColor = QColor(25, 81, 0, 150)
 rangeBrushColor = QColor(11, 118, 108, 140)
 towerButtonSize = 40
 
-isPaused = False
-
-gameSpeed = 20
+gameSpeed = 30

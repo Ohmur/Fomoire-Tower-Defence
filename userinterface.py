@@ -5,13 +5,13 @@ Created on 6.3.2016
 '''
 
 import sys
-from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QFrame, QPushButton, QAbstractButton, QLabel, QMainWindow
-from PyQt5.QtGui import QPainter, QColor, QPixmap, QDrag
+from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QFrame, QPushButton, QAbstractButton, QLabel, QMainWindow, QLCDNumber
+from PyQt5.QtGui import QPainter, QColor, QPixmap
 from globals import *
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QBasicTimer
 from gameboard import Gameboard
 from tower import *
-from PyQt5.Qt import QHBoxLayout, QVBoxLayout
+from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer
         
 
 class UserInterface(QMainWindow):
@@ -24,9 +24,12 @@ class UserInterface(QMainWindow):
         self.isTowerHovered = False
         self.towerBeingHovered = None
         self.selectedTower = None
+        self.timepassed = 0
+        self.timer = QBasicTimer()
         
         self.gameboard.readMapData("Map1.txt")
         self.initUI()
+        self.timer.start(gameSpeed, self)
         
 
     def initUI(self):
@@ -81,7 +84,7 @@ class UserInterface(QMainWindow):
 
     def getGameStats(self):
         return self.gameStats
-
+    
 
 class MapView(QFrame):
     
@@ -108,9 +111,10 @@ class MapView(QFrame):
         self.drawMap(qp)
         
         if not self.parent.getIsTowerSelected() and self.parent.getIsTowerBeingHovered():
-            self.drawTowerRange(self.parent.getTowerBeingHovered(), qp)
+            self.drawTowerRange(self.parent.getTowerBeingHovered().getPositionX(), self.parent.getTowerBeingHovered().getPositionY(), self.parent.getTowerBeingHovered().getRange(), qp)
         
         if self.underMouse() and self.parent.getIsTowerSelected():
+            self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.getSelectedTower().getRange(), qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
         qp.end()
@@ -232,13 +236,10 @@ class MapView(QFrame):
         return closest_corner_x, closest_corner_y
         
         
-    def drawTowerRange(self, tower, painter):
+    def drawTowerRange(self, x, y, towerRange, painter):
         
         painter.setPen(rangePenColor)
         painter.setBrush(rangeBrushColor)
-        towerRange = tower.getRange()
-        x = tower.getPositionX()
-        y = tower.getPositionY()
         painter.drawEllipse(QPoint(x, y), towerRange, towerRange)
     
     
@@ -258,8 +259,13 @@ class BottomButtons(QFrame):
         super(BottomButtons, self).__init__(parent)
         self.parent = parent
         self.isPaused = False
+        self.seconds = 0
+        
         self.initUI(self.parent.getGameboard())
-    
+        
+        self.clockTimer = QBasicTimer()
+        self.clockTimer.start(1000, self)
+        
         
     def initUI(self, gameboard): 
         
@@ -272,9 +278,11 @@ class BottomButtons(QFrame):
         buildLabel.move(10, 0)
         vbox.addWidget(buildLabel)
         
-        vbox.addStretch(1)
+        vbox.addStretch()
         vbox.addLayout(hbox)
         self.setLayout(vbox)
+        
+        
 
         towers = gameboard.getTowers()
         i = 0
@@ -294,7 +302,12 @@ class BottomButtons(QFrame):
                 buttons += 1
             i += 1
         
+          
         hbox.addStretch()
+        self.lcd = QLCDNumber(self)
+        hbox.addWidget(self.lcd)
+        hbox.addStretch()
+        
         self.pauseButton = QPushButton("Pause", self)
         self.pauseButton.clicked.connect(self.pauseGame)
         hbox.addWidget(self.pauseButton)
@@ -303,15 +316,21 @@ class BottomButtons(QFrame):
         
         
     def musketeerButtonClick(self):
-        self.parent.isTowerSelected = True
-        self.parent.setSelectedTower(Musketeer())
-        self.parent.statusBar().showMessage('Musketeer tower selected')
+        if self.isPaused == False:
+            self.parent.isTowerSelected = True
+            self.parent.setSelectedTower(Musketeer())
+            self.parent.statusBar().showMessage('Musketeer tower selected')
+        else:
+            self.parent.statusBar().showMessage("The game is paused. You can't build towers.")
         
         
     def cannonButtonClick(self):
-        self.parent.isTowerSelected = True
-        self.parent.setSelectedTower(Cannon())
-        self.parent.statusBar().showMessage('Cannon tower selected')
+        if self.isPaused == False:
+            self.parent.isTowerSelected = True
+            self.parent.setSelectedTower(Cannon())
+            self.parent.statusBar().showMessage('Cannon tower selected')
+        else:
+            self.parent.statusBar().showMessage("The game is paused. You can't build towers.")
         
 
     def pauseGame(self, pressed):
@@ -320,13 +339,20 @@ class BottomButtons(QFrame):
             self.parent.statusBar().showMessage('Game paused')
             self.pauseButton.setText('Play') 
             self.isPaused = True 
-            #self.controller.timer.stop()  
+            self.parent.timer.stop()  
+            self.clockTimer.stop()
         else:
             self.parent.statusBar().showMessage('')
             self.pauseButton.setText('Pause')
             self.isPaused = False 
-            #self.controller.timer.start(globals.gameSpeed, self.controller)
- 
+            self.parent.timer.start(gameSpeed, self.parent)
+            self.clockTimer.start(1000, self)
+    
+    
+    def timerEvent(self, event):
+        self.seconds += 1
+        self.lcd.display("%.2d:%.2d" % (self.seconds // 60, self.seconds % 60))
+      
       
 class GameStats(QFrame):
     
