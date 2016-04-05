@@ -101,7 +101,7 @@ class Cannon(Tower):
         self.range = 100
         self.fireRate = 3
         self.cost = 150
-        self.upgradeCost = 120
+        self.upgradeCost = 180
         self.power = 80
         self.size = 2
         self.level = 1
