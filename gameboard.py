@@ -9,22 +9,23 @@ from corrupted_map_file_error import *
 class Gameboard:
 
     def __init__(self):
-        self.name = ''
-        self.height = 20
-        self.width = 50
-        self.startingLives = 10
-        self.currentLives = self.startingLives
-        self.money = 100
-        self.noOfWaves = 0
-        self.currentWave = 1
-        self.waves = []
-        self.towersAvailable = []
-        self.towersBuild = []
-        self.enemyPath = []
-        self.river = []
-        self.occupied = []
-        self.unoccupied = []
-        self.road = []
+        self._name = ''
+        self._height = 20
+        self._width = 50
+        self._startingLives = 10
+        self._currentLives = self._startingLives
+        self._money = 100
+        self._noOfWaves = 0
+        self._currentWave = 1
+        self._waves = []
+        self._towersAvailable = []
+        self._towersBuild = []
+        self._enemyPath = []
+        self._river = []
+        self._occupied = []
+        self._unoccupied = []
+        self._road = []
+    
 
     def readMapData(self, file):
         
@@ -50,7 +51,7 @@ class Gameboard:
                                 elif line_parts[0].strip().lower() == "size":
                                     heightAndWidth = line_parts[1].split("x")
                                     try:
-                                        self.height, self.width = int(heightAndWidth[0].strip()), int(heightAndWidth[1].strip())
+                                        self._height, self._width = int(heightAndWidth[0].strip()), int(heightAndWidth[1].strip())
                                         mapSize = True
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading map size failed.")  
@@ -69,8 +70,8 @@ class Gameboard:
                                 elif line_parts[0].strip().lower() == "towers":
                                     towerlist = line_parts[1].split(",")
                                     for tower in towerlist:
-                                        self.towersAvailable.append(tower.strip().lower())
-                                        #I have to add code that checks if the tower name is correct before adding it.
+                                        self._towersAvailable.append(tower.strip().lower())
+                                        #I have to add code that checks if the tower _name is correct before adding it.
                                     
                             current_line = mapData.readline()
                                     
@@ -88,7 +89,7 @@ class Gameboard:
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading number of waves failed.")
                                     i = 0
-                                    while i < self.noOfWaves:
+                                    while i < self._noOfWaves:
                                         current_line = mapData.readline()
                                         line_parts = current_line.split(",")
                                         try:
@@ -100,7 +101,7 @@ class Gameboard:
                                         while x < len(line_parts):
                                             EnemiesInWave.append(line_parts[x].strip().lower())
                                             x += 1
-                                        self.waves.append([Interval, EnemiesInWave])
+                                        self._waves.append([Interval, EnemiesInWave])
                                         i += 1
                                             
                             current_line = mapData.readline()
@@ -114,23 +115,23 @@ class Gameboard:
                             while current_line != '' and current_line[0] != "#":
                                 if current_line.strip() != "":
                                     y = 0
-                                    while y < self.height:
+                                    while y < self._height:
                                         symbols = list(current_line)
                                         x = 0
-                                        while x < self.width:
+                                        while x < self._width:
                                             symbol = str(symbols[x].strip())
                                             if symbol == "+":
-                                                self.unoccupied.append([x, y])
+                                                self._unoccupied.append([x, y])
                                             elif symbol == "0":
-                                                self.occupied.append([x, y])
-                                                self.road.append([x, y])
+                                                self._occupied.append([x, y])
+                                                self._road.append([x, y])
                                             elif symbol == "R":
-                                                self.occupied.append([x, y])
-                                                self.river.append([x, y])
+                                                self._occupied.append([x, y])
+                                                self._river.append([x, y])
                                             elif symbol == "P":
-                                                self.occupied.append([x, y])
-                                                self.road.append([x, y])
-                                                self.enemyPath.append([x, y])
+                                                self._occupied.append([x, y])
+                                                self._road.append([x, y])
+                                                self._enemyPath.append([x, y])
                                             else:
                                                 raise CorruptedMapFileError("Unknown symbol in map layout.")
                                             x += 1
@@ -152,87 +153,129 @@ class Gameboard:
         except IOError:
             raise CorruptedMapFileError("Reading the map data failed.")
         
+        
     def setMapName(self, name):
-        self.name = name
+        self._name = name
+        
         
     def setStartingLives(self, lives):
-        self.startingLives = lives
+        self._startingLives = lives
+
 
     def setCurrentLives(self, lives):
-        self.currentLives = lives
+        self._currentLives = lives
+    
     
     def setStartingMoney(self, money):
-        self.money = money
+        self._money = money
+    
     
     def setNoOfWaves(self, waves):
-        self.noOfWaves = waves
+        self._noOfWaves = waves
+    
     
     def getRoad(self):
-        return self.road
+        return self._road
+    
+    
+    def getEnemyPath(self):
+        return self._enemyPath
+    
     
     def getRiver(self):
-        return self.river
+        return self._river
+    
     
     def getWidth(self):
-        return self.width
+        return self._width
+    
     
     def getHeight(self):
-        return self.height
+        return self._height
+    
     
     def getName(self):
-        return self.name
+        return self._name
+    
     
     def getTowers(self):
-        return self.towersAvailable
+        return self._towersAvailable
+    
     
     def getMoney(self):
-        return self.money
+        return self._money
+    
     
     def buy(self, cost):
-        self.money -= cost
+        self._money -= cost
+    
     
     def getCurrentWave(self):
-        return self.currentWave
+        return self._currentWave
+    
     
     def getNoOfWaves(self):
-        return self.noOfWaves
+        return self._noOfWaves
+    
     
     def getCurrentLives(self):
-        return self.currentLives
+        return self._currentLives
+    
     
     def getStartingLives(self):
-        return self.startingLives
+        return self._startingLives
+    
     
     def getOccupied(self):
-        return self.occupied 
+        return self._occupied 
+    
     
     def addToOccupied(self, coordinates):
-        self.occupied.append(coordinates)
+        self._occupied.append(coordinates)
+        
         
     def getUnoccupied(self):
-        return self.unoccupied
+        return self._unoccupied
+    
     
     def addBuildTower(self, tower):
-        self.towersBuild.append(tower)
+        self._towersBuild.append(tower)
+    
     
     def getBuildTowers(self):
-        return self.towersBuild
+        return self._towersBuild
+    
     
     def removeFromUnoccupied(self, coordinates):
-        self.unoccupied.remove(coordinates)
-        
+        self._unoccupied.remove(coordinates)
+
         
     def printMapInfo(self):
         #I made this to check if the readMapData method worked properly.
-        print("Map name " + str(self.name) + "\n"
-              +"Height " + str(self.height) + " and width " + str(self.width) + "\n"
-              +"Starting lives " + str(self.startingLives) + "\n"
-              +"Starting money " + str(self.money) + "\n"
-              +"Number of Waves " + str(self.noOfWaves) + "\n"
-              +"Waves " + str(self.waves) + "\n"
-              +"Towers" + str(self.towersAvailable) + "\n"
-              +"Enemy path " + str(self.enemyPath) + "\n"
-              +"River " + str(self.river) + "\n"
-              +"Occupied " + str(self.occupied) + "\n"
-              +"Unoccupied " + str(self.unoccupied))
+        print("Map _name " + str(self._name) + "\n"
+              +"Height " + str(self._height) + " and _width " + str(self._width) + "\n"
+              +"Starting lives " + str(self._startingLives) + "\n"
+              +"Starting _money " + str(self._money) + "\n"
+              +"Number of Waves " + str(self._noOfWaves) + "\n"
+              +"Waves " + str(self._waves) + "\n"
+              +"Towers" + str(self._towersAvailable) + "\n"
+              +"Enemy path " + str(self._enemyPath) + "\n"
+              +"River " + str(self._river) + "\n"
+              +"Occupied " + str(self._occupied) + "\n"
+              +"Unoccupied " + str(self._unoccupied))
+    
+    
+    name = property(getName)
+    height = property(getHeight)
+    width = property(getWidth)
+    currentLives = property(getCurrentLives)
+    startingLives = property(getStartingLives)
+    money = property(getMoney)
+    currentWave = property(getCurrentWave)
+    noOfWaves = property(getNoOfWaves)
+    enemyPath = property(getEnemyPath)
+    occupied = property(getOccupied)
+    river = property(getRiver)
+    road = property(getRoad)
+    unoccupied = property(getUnoccupied)
     

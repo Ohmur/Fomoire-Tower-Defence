@@ -16,7 +16,7 @@ class MapView(QFrame):
     def __init__(self, parent):
         super(MapView, self).__init__(parent)
         self.parent = parent
-        self.initUI(self.parent.getGameboard())
+        self.initUI(self.parent.gameboard)
         self.mouse_x = 0
         self.mouse_y = 0
         self.clickedTower = None
@@ -24,8 +24,7 @@ class MapView(QFrame):
         
     def initUI(self, gameboard): 
 
-        #self.setStyleSheet("QWidget { background: #5ea352    }")
-        self.setFixedSize(gameboard.getWidth()*blockSize, gameboard.getHeight()*blockSize)
+        self.setFixedSize(gameboard.width*blockSize, gameboard.height*blockSize)
         self.setMouseTracking(True)
         self.show()
     
@@ -37,10 +36,12 @@ class MapView(QFrame):
         self.drawMap(qp)
         
         if not self.parent.isTowerSelected and self.parent.isTowerHovered:
-            self.drawTowerRange(self.parent.towerBeingHovered.getPositionX(), self.parent.towerBeingHovered.getPositionY(), self.parent.towerBeingHovered.getRange(), qp)
+            # Draws tower range when a tower is being hovered
+            self.drawTowerRange(self.parent.towerBeingHovered.posX, self.parent.towerBeingHovered.posY, self.parent.towerBeingHovered.range, qp)
         
         if self.underMouse() and self.parent.isTowerSelected:
-            self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.getRange(), qp)
+            # Draws tower outline and range when a tower is being bought
+            self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
         qp.end()
@@ -48,103 +49,98 @@ class MapView(QFrame):
         
     def drawMap(self, qp):
         
-        self.drawMapBlocks(qp, self.parent.gameboard.getRiver(), riverColor)
-        self.drawMapBlocks(qp, self.parent.gameboard.getRoad(), roadColor)
-        self.drawMapBlocks(qp, self.parent.gameboard.getUnoccupied(), grassColor)
-        self.drawGrid(qp, gridColor)
-            
+        self.drawMapBlocks(qp, self.parent.gameboard.river, riverColor)
+        self.drawMapBlocks(qp, self.parent.gameboard.road, roadColor)
+        self.drawMapBlocks(qp, self.parent.gameboard.unoccupied, grassColor)
+         
             
     def drawMapBlocks(self, qp, coordinateList, color):
-        qp.setPen(color) #Qt.NoPen not working...
+        # Draws map block according to the coordinate list
+        qp.setPen(gridColor)
         qp.setBrush(color)
+        
         for i in coordinateList:
             qp.drawRect(i[0]*blockSize, i[1]*blockSize, blockSize, blockSize)
     
-    
-    def drawGrid(self, qp, color):
-        qp.setPen(color)
-        for i in range(0, self.parent.gameboard.getWidth()*blockSize, blockSize):
-            qp.drawLine(i, 0, i, self.parent.gameboard.getHeight()*blockSize)
-            qp.drawLine(0, i, self.parent.gameboard.getWidth()*blockSize, i)
-    
-    
+ 
     def mousePressEvent(self, e):
-        
+        # Method for building towers and checking that their location is ok
         if e.button() == Qt.LeftButton:
+            
             if self.parent.isTowerSelected == True:
-                #check mouse location, build a tower
-                
+                # First we check the mouse location
                 self.mouse_x = e.pos().x()
                 self.mouse_y = e.pos().y()
-                    
+                
+                # We calculate the closest grid corner to find the center of the tower
                 closest_corner_x, closest_corner_y = self.calculateClosestCorner(self.mouse_x, self.mouse_y)
                     
-                #then we calculate the grid blocks for the tower
+                # We calculate the bottom right block for the tower
                 block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
-                    
-                if block1[0] > 0 and block1[1] > 0:
+                
+                # We need to make sure that the tower doesn't go over the borders of the gameboard
+                if block1[0] > 0 and block1[1] > 0 and block1[0] < self.parent.gameboard.width and block1[1] < self.parent.gameboard.height:
+                    #Then we calculate the other blocks
                     block2 = [block1[0] - 1, block1[1]]
                     block3 = [block1[0] - 1, block1[1] - 1]
                     block4 = [block1[0], block1[1] - 1]
                         
                     blocks = [block1, block2, block3, block4]
-                    occupied = self.parent.gameboard.getOccupied()
+                    occupied = self.parent.gameboard.occupied
                     canPlaceTower = True
-                        
+                    
+                    # We check that none of the tower blocks are occupied
                     for block in blocks:
                         if block in occupied:
                             canPlaceTower = False
                                 
                     if canPlaceTower == True:
-                        #places the tower on the map
+                        # We places the tower on the map
                         tower = self.parent.selectedTower
                         tower.setPosition(closest_corner_x, closest_corner_y)
                             
-                        #tower_pic = self.parent.getSelectedTower().getPicture()
                         placedTower = ClickableTower(tower, self)
-                        #placedTower.setPixmap(tower_pic)
                         placedTower.move(block3[0] * 20, block3[1] * 20)
                         placedTower.show()
-                            
+                        
+                        # Then we add the tower blocks to the list of occupied tiles   
                         for block in blocks:
                             self.parent.gameboard.addToOccupied(block)
                             
                         self.parent.gameboard.addBuildTower(tower)    
-                        self.parent.gameboard.buy(tower.getPrice())
+                        self.parent.gameboard.buy(tower.price)
                         self.parent.gamestats.update()
                             
-                        self.parent.statusBar().showMessage('Tower build') 
+                        self.statusBarMessage('Tower build') 
                         self.parent.selectedTower = None
                         self.parent.isTowerSelected = False
                             
-                        
                     else:
-                        self.parent.statusBar().showMessage("Can't place it there")
+                        self.statusBarMessage("Can't place it there")
                             
                 else:
-                        self.parent.statusBar().showMessage("Can't place it there")          
+                        self.statusBarMessage("Can't place it there")          
 
-        
         else:
+            # If we click the right mouse button we cancel the tower selection
             self.parent.selectedTower = None
             self.parent.isTowerSelected = False
-            self.parent.statusBar().showMessage('')
+            self.statusBarMessage('')
             self.update()
     
     
     def mouseMoveEvent(self, event):
-        
+        # This method makes sure that the tower outline and range follow the mouse
         if self.underMouse() and self.parent.isTowerSelected == True:
             self.mouse_x, self.mouse_y = self.calculateClosestCorner(event.pos().x(), event.pos().y())
             self.update()
             
     
     def calculateClosestCorner(self, mouse_x, mouse_y):
-                    
+        # Calculates the closest grid corner from mouse location      
         closest_corner_x = 0
-        closest_corner_y = 0
-                    
-        #we calculate the closest grid corner from where the mouse was clicked
+        closest_corner_y = 0      
+        
         if mouse_x % 20 < 10:
             closest_corner_x = mouse_x - (mouse_x % 20)
         else:
@@ -184,7 +180,7 @@ class MapView(QFrame):
         
         if self.parent.isTowerSelected == False:
             self.clickedTower = tower
-            self.parent.statusBar().showMessage("Tower clicked")
+            self.statusBarMessage("Tower clicked")
             self.popUp = QFrame()
             self.popUp.setGeometry(500, 500, 100, 100)
         
@@ -192,11 +188,11 @@ class MapView(QFrame):
             self.popUp.setLayout(grid)
         
             #I need to set fxed decimals here.
-            towerStats = QLabel(tower.getName() + " Tower Stats", self)
-            power = QLabel("Power: " + str(tower.getPower()), self)
-            towerRange = QLabel("Range: " + str(tower.getRange()), self)
-            fireRate = QLabel("Rate of Fire: " + str(tower.getFireRate()), self)
-            level = QLabel("Level: " + str(tower.getLevel()), self)
+            towerStats = QLabel(tower.name + " Tower Stats", self)
+            power = QLabel("Power: " + str(tower.power), self)
+            towerRange = QLabel("Range: " + str(tower.range), self)
+            fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
+            level = QLabel("Level: " + str(tower.level), self)
         
             vbox = QVBoxLayout()
             vbox.addWidget(towerStats)
@@ -209,8 +205,8 @@ class MapView(QFrame):
         
             vbox2 = QVBoxLayout()
         
-            if self.clickedTower.getMaxLevel() > self.clickedTower.getLevel():
-                upgradeButton = QPushButton("Upgrade for " + str(tower.getUpgradePrice()))
+            if self.clickedTower.maxLevel > self.clickedTower.level:
+                upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
                 vbox2.addWidget(upgradeButton)
                 upgradeButton.clicked.connect(self.upgrade)
             else:
@@ -227,12 +223,12 @@ class MapView(QFrame):
     
     def upgrade(self):
         
-        if self.clickedTower.getMaxLevel() > self.clickedTower.getLevel():
+        if self.clickedTower.maxLevel > self.clickedTower.level:
             
-            if self.parent.gameboard.getMoney() >= self.clickedTower.getUpgradePrice():
+            if self.parent.gameboard.money >= self.clickedTower.upgradePrice:
                 self.clickedTower.upgrade()
-                self.parent.gameboard.buy(self.clickedTower.getUpgradePrice())
-                self.statusBarMessage("Tower upgraded.")
+                self.parent.gameboard.buy(self.clickedTower.upgradePrice)
+                self.statusBarMessage("Tower upgraded")
                 self.popUp.deleteLater()
         
             else:
@@ -247,7 +243,7 @@ class ClickableTower(QAbstractButton):
     
     def __init__(self, tower, parent):
         super(ClickableTower, self).__init__(parent)
-        self.pixmap = tower.getPicture()
+        self.pixmap = tower.picture
         self.parent = parent
         self.tower = tower
     

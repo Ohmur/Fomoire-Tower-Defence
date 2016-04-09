@@ -15,13 +15,13 @@ class GameStats(QFrame):
     def __init__(self, parent):
         super(GameStats, self).__init__(parent)
         self.parent = parent
-        self.initUI(self.parent.getGameboard())    
+        self.initUI(self.parent.gameboard)    
     
     
     def initUI(self, gameboard): 
 
         self.setStyleSheet("QFrame { background: #D1D1D1}") 
-        self.setFixedSize(gameboard.getWidth()*blockSize, 20)
+        self.setFixedSize(gameboard.width*blockSize, 20)
         self.show()
     
     
@@ -36,6 +36,6 @@ class GameStats(QFrame):
     def drawGameStats(self, event, qp):
         
         qp.setPen(QColor(0, 0, 0, 255))
-        qp.drawText(event.rect(), Qt.AlignLeft, "Money: " + str(self.parent.getGameboard().getMoney()))
-        qp.drawText(event.rect(), Qt.AlignCenter, "Wave: " + str(self.parent.getGameboard().getCurrentWave()) + "/" + str(self.parent.getGameboard().getNoOfWaves()))
-        qp.drawText(event.rect(), Qt.AlignRight, "Lives " + str(self.parent.getGameboard().getCurrentLives()) + "/" + str(self.parent.getGameboard().getStartingLives()))
+        qp.drawText(event.rect(), Qt.AlignLeft, "Money: " + str(self.parent.gameboard.money))
+        qp.drawText(event.rect(), Qt.AlignCenter, "Wave: " + str(self.parent.gameboard.currentWave) + "/" + str(self.parent.gameboard.noOfWaves))
+        qp.drawText(event.rect(), Qt.AlignRight, "Lives " + str(self.parent.gameboard.currentLives) + "/" + str(self.parent.gameboard.startingLives))

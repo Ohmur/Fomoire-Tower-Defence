@@ -37,7 +37,7 @@ class UserInterface(QMainWindow):
         
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
-        self.setWindowTitle(self._gameboard.getName())
+        self.setWindowTitle(self._gameboard.name)
         self.statusBar().showMessage('Ready')
         vbox = QVBoxLayout()
         centralWidget.setLayout(vbox)

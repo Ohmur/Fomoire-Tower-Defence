@@ -20,13 +20,13 @@ class BottomButtons(QFrame):
         self.seconds = 0
         self.clockTimer = QBasicTimer()
         self.clockTimer.start(1000, self)
-        self.initUI(self.parent.getGameboard())
+        self.initUI(self.parent.gameboard)
         
         
     def initUI(self, gameboard): 
         
         self.setStyleSheet("QWidget { background: #D1D1D1}")
-        self.setFixedSize(gameboard.getWidth()*blockSize, 120)
+        self.setFixedSize(gameboard.width*blockSize, 120)
         self.grid = QGridLayout()
         self.setLayout(self.grid)
         
@@ -45,6 +45,7 @@ class BottomButtons(QFrame):
         i = 0
         buttons = 0
         
+        # We go through the list of different towers in the map and add buttons for them to the bottom left corner of the screen.
         while i < len(towers):
             if towers[i] == "t1":
                 # I should add the price to the picture
@@ -83,6 +84,9 @@ class BottomButtons(QFrame):
     
     
     '''
+    # These methods draw the tower stats into the bottom of the screen when a tower is being bought.
+    # For some reason these methods make the timer not work and the game starts to lag.
+    
     def paintEvent(self, event):
 
         qp = QPainter()
@@ -98,11 +102,11 @@ class BottomButtons(QFrame):
     
     def drawTowerInfo(self, tower, qp):
         
-        towerStats = QLabel(tower.getName() + " Tower Stats", self)
-        power = QLabel("Power: " + str(tower.getPower()), self)
-        towerRange = QLabel("Range: " + str(tower.getRange()), self)
-        fireRate = QLabel("Rate of Fire: " + str(tower.getFireRate()), self)
-        level = QLabel("Level: " + str(tower.getLevel()), self)
+        towerStats = QLabel(tower.name + " Tower Stats", self)
+        power = QLabel("Power: " + str(tower.power), self)
+        towerRange = QLabel("Range: " + str(tower.range), self)
+        fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
+        level = QLabel("Level: " + str(tower.level), self)
         
         vbox = QVBoxLayout()
         
@@ -122,39 +126,39 @@ class BottomButtons(QFrame):
     def musketeerButtonClick(self):
         
         if self.isPaused == False:
-            if self.parent.gameboard.getMoney() > Musketeer().getPrice():
+            if self.parent.gameboard.money > Musketeer().price:
                 self.parent.isTowerSelected = True
                 self.parent.selectedTower = Musketeer()
-                self.parent.statusBar().showMessage('Musketeer tower selected')
+                self.statusBarMessage('Musketeer tower selected')
             else:
-                self.parent.statusBar().showMessage("You don't have enough money.")
+                self.statusBarMessage("You don't have enough money.")
         else:
-            self.parent.statusBar().showMessage("The game is paused. You can't build towers.")
+            self.statusBarMessage("The game is paused. You can't build towers.")
         
         
     def cannonButtonClick(self):
         
         if self.isPaused == False:
-            if self.parent.gameboard.getMoney() > Cannon().getPrice():
+            if self.parent.gameboard.money > Cannon().price:
                 self.parent.isTowerSelected = True
                 self.parent.selectedTower = Cannon()
-                self.parent.statusBar().showMessage('Cannon tower selected')
+                self.statusBarMessage('Cannon tower selected')
             else:    
-                self.parent.statusBar().showMessage("You don't have enough money.")
+                self.statusBarMessage("You don't have enough money.")
         else:
-            self.parent.statusBar().showMessage("The game is paused. You can't build towers.")
+            self.statusBarMessage("The game is paused. You can't build towers.")
         
 
     def pauseGame(self, pressed):
 
         if self.isPaused == False:
-            self.parent.statusBar().showMessage('Game paused')
+            self.statusBarMessage('Game paused')
             self.pauseButton.setText('Play') 
             self.isPaused = True 
             self.parent.timer.stop()  
             self.clockTimer.stop()
         else:
-            self.parent.statusBar().showMessage('')
+            self.statusBarMessage('')
             self.pauseButton.setText('Pause')
             self.isPaused = False 
             self.parent.timer.start(gameSpeed, self.parent)
@@ -165,10 +169,13 @@ class BottomButtons(QFrame):
         self.seconds += 1
         self.lcd.display("%.2d:%.2d" % (self.seconds // 60, self.seconds % 60))
         
+    
+    def statusBarMessage(self, message):
+        self.parent.statusBar().showMessage(message)
+        
         
 class BuyButton(QAbstractButton):
-
-    
+    # This is a picture button that changes appearance when howered and clicked.
     def __init__(self, pixmap, pixmap_hover, pixmap_pressed, parent):
         super(BuyButton, self).__init__(parent)
         self.pixmap = pixmap
