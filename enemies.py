@@ -19,7 +19,6 @@ class Enemy(object):
         self._position_x = self._path[0][0]*20
         self._position_y = self._path[0][1]*20
         
-        
         self._blocksMoved = 0
         self._currentBlock = self._path[0]
         self._nextBlock = self._path[1]
@@ -40,13 +39,13 @@ class Enemy(object):
         if floor(self._position_x / 20) != self._currentBlock[0]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
-            if self._blocksMoved < len(self._path):
+            if self._blocksMoved < len(self._path) - 1:
                 self._nextBlock = self._path[self._blocksMoved + 1]    
                 
         elif floor(self._position_y / 20) != self._currentBlock[1]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
-            if self._blocksMoved < len(self._path):
+            if self._blocksMoved < len(self._path) - 1:
                 self._nextBlock = self._path[self._blocksMoved + 1]
     
     

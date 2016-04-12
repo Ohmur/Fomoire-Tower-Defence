@@ -26,7 +26,7 @@ class BottomButtons(QFrame):
     def initUI(self, gameboard): 
         
         self.setStyleSheet("QWidget { background: #D1D1D1}")
-        self.setFixedSize(gameboard.width*blockSize, 120)
+        self.setFixedSize((gameboard.width - 1)*blockSize, 120)
         self.grid = QGridLayout()
         self.setLayout(self.grid)
         

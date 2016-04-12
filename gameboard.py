@@ -283,8 +283,8 @@ class Gameboard:
         return self._towersBuild
  
     
-    def addSummonedEnemy(self, enemy):
-        self._enemiesSummoned.append(enemy)
+    def addSummonedEnemy(self, enemy, enemyLabel):
+        self._enemiesSummoned.append([enemy, enemyLabel])
     
  
     def getEnemiesSummoned(self):

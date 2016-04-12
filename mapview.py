@@ -10,6 +10,7 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.Qt import QVBoxLayout
 from clickable_tower import ClickableTower
+from clickable_enemy import ClickableEnemy
 from enemies import *
 
 
@@ -26,7 +27,7 @@ class MapView(QFrame):
         
     def initUI(self, gameboard): 
 
-        self.setFixedSize(gameboard.width*blockSize, gameboard.height*blockSize)
+        self.setFixedSize((gameboard.width - 1)*blockSize, gameboard.height*blockSize)
         self.setMouseTracking(True)
         self.show()
     
@@ -46,6 +47,7 @@ class MapView(QFrame):
             self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
+        '''
         if len(self.parent.gameboard.enemiesSummoned) > 0:
             
             for enemy in self.parent.gameboard.enemiesSummoned:
@@ -54,7 +56,7 @@ class MapView(QFrame):
                 label.setPixmap(pic)
                 label.move(enemy.posX, enemy.posY)
                 label.show()
-        
+        '''
         qp.end()
         
         
@@ -249,6 +251,40 @@ class MapView(QFrame):
             self.statusBarMessage("Tower already at maximum level.")   
     
     
+    def summonEnemy(self):
+        
+        waveIndex = self.parent.gameboard.currentWave - 1
+        
+        if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
+        
+            if (self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0]) == 0:
+                
+                if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
+                    
+                    if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath)):
+                        self.parent.checkIsWaveDone()
+    
+                    elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath)):
+                        self.parent.checkIsWaveDone()
+    
+    
+    def checkNextEnemy(self, name, enemyType):
+        
+        enemyIndex = self.parent.gameboard.currentEnemy - 1
+        waveIndex = self.parent.gameboard.currentWave - 1
+        
+        if self.parent.gameboard.waves[waveIndex][1][enemyIndex] == name:
+            clickableEnemy = ClickableEnemy(enemyType, self)
+            clickableEnemy.move(enemyType.posX, enemyType.posY)
+            clickableEnemy.show()
+            self.parent.gameboard.addSummonedEnemy(enemyType, clickableEnemy)
+            self.parent.gameboard.currentEnemy += 1
+            return True
+        
+        else:
+            return False
+    
+    
     def moveEnemies(self):
         
         noOfSummonedEnemies = len(self.parent.gameboard.enemiesSummoned)
@@ -256,12 +292,15 @@ class MapView(QFrame):
         if noOfSummonedEnemies > 0:
             i = 0
             while i < noOfSummonedEnemies:
-                enemy = self.parent.gameboard.enemiesSummoned[i]
+                enemy = self.parent.gameboard.enemiesSummoned[i][0]
+                clickableEnemy = self.parent.gameboard.enemiesSummoned[i][1]
                 if not enemy.isFinished:
+                    enemy.move()
+                    clickableEnemy.move(enemy.posX, enemy.posY)
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
                         if self.parent.gameboard.currentLives <= 0:
-                            self.parent.loseGame()
-                    else:
-                        self.parent.gameboard.enemiesSummoned[i].move()
+                            self.parent.loseGame()      
+                i += 1         
         self.update()       
+    

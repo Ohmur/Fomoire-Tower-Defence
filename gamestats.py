@@ -21,7 +21,7 @@ class GameStats(QFrame):
     def initUI(self, gameboard): 
 
         self.setStyleSheet("QFrame { background: #D1D1D1}") 
-        self.setFixedSize(gameboard.width*blockSize, 20)
+        self.setFixedSize((gameboard.width - 1)*blockSize, 20)
         self.show()
     
     
