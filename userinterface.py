@@ -13,6 +13,8 @@ from PyQt5.Qt import QVBoxLayout, QBasicTimer
 from bottombuttons import BottomButtons
 from gamestats import GameStats
 from mapview import MapView
+from enemies import *
+import time
         
 
 class UserInterface(QMainWindow):
@@ -25,7 +27,7 @@ class UserInterface(QMainWindow):
         self._isTowerHovered = False
         self._towerBeingHovered = None
         self._selectedTower = None
-        self.timepassed = 0
+        self._timePassed = 0
         self.timer = QBasicTimer()
         
         self._gameboard.readMapData("Map1.txt")
@@ -34,7 +36,7 @@ class UserInterface(QMainWindow):
         
 
     def initUI(self):
-        
+
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
         self.setWindowTitle(self._gameboard.name)
@@ -85,17 +87,82 @@ class UserInterface(QMainWindow):
 
     def getGameStats(self):
         return self.gameStats
+
+
+    def getTimePassed(self):
+        return self._timePassed
     
     
+    def timerEvent(self, event):
+        self._timePassed += 1
+        self.summonEnemy()
+        self.mapView.moveEnemies()
+
+
+    def summonEnemy(self):
+        
+        waveIndex = self._gameboard.currentWave - 1
+        
+        if self.gameboard.currentWave <= len(self.gameboard.waves):
+        
+            if (self.timePassed % self._gameboard.waves[waveIndex][0]) == 0:
+                
+                if self._gameboard.currentWave <= len(self._gameboard.waves):
+                    
+                    if self.checkNextEnemy("e1", Barbarian(self._gameboard.enemyPath)):
+                        self.checkIsWaveDone()
     
+                    elif self.checkNextEnemy("e2", Berserker(self._gameboard.enemyPath)):
+                        self.checkIsWaveDone()
+                    
+                    
+    def checkIsWaveDone(self):
+
+        waveIndex = self._gameboard.currentWave - 1
+
+        if self._gameboard.currentEnemy > len(self._gameboard.waves[waveIndex][1]):
+            self._gameboard.currentEnemy = 1
+            self._gameboard.currentWave += 1
+            self.gamestats.update()
+            return True
+        else:
+            return False
+    
+    
+    def checkNextEnemy(self, name, enemyType):
+        
+        enemyIndex = self._gameboard.currentEnemy - 1
+        waveIndex = self._gameboard.currentWave - 1
+        
+        if self._gameboard.waves[waveIndex][1][enemyIndex] == name:
+            self._gameboard.addSummonedEnemy(enemyType)
+            self._gameboard.currentEnemy += 1
+            return True
+        
+        else:
+            return False
+    
+    
+    def loseGame(self):
+        self.bottomButtons.clockTimer.stop()
+        self.timer.stop()
+        self.statusBar().showMessage('Game has ended. You lost.')
+    
+    
+    def winGame(self):
+        self.bottomButtons.clockTimer.stop()
+        self.timer.stop()
+        self.statusBar().showMessage('Game has ended. You won.')
+    
+
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
     selectedTower = property(getSelectedTower, setSelectedTower)
     isTowerHovered = property(getIsTowerBeingHovered)
     towerBeingHovered = property(getTowerBeingHovered)
     gamestats = property(getGameStats)
     gameboard = property(getGameboard)
-    
-      
+    timePassed = property(getTimePassed)
+
         
 if __name__ == '__main__':
     

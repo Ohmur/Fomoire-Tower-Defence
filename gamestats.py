@@ -37,5 +37,8 @@ class GameStats(QFrame):
         
         qp.setPen(QColor(0, 0, 0, 255))
         qp.drawText(event.rect(), Qt.AlignLeft, "Money: " + str(self.parent.gameboard.money))
-        qp.drawText(event.rect(), Qt.AlignCenter, "Wave: " + str(self.parent.gameboard.currentWave) + "/" + str(self.parent.gameboard.noOfWaves))
+        if self.parent.gameboard.currentWave < len(self.parent.gameboard.waves):
+            qp.drawText(event.rect(), Qt.AlignCenter, "Wave: " + str(self.parent.gameboard.currentWave) + "/" + str(self.parent.gameboard.noOfWaves))
+        else:
+            qp.drawText(event.rect(), Qt.AlignCenter, "Wave: " + str(len(self.parent.gameboard.waves)) + "/" + str(self.parent.gameboard.noOfWaves))
         qp.drawText(event.rect(), Qt.AlignRight, "Lives " + str(self.parent.gameboard.currentLives) + "/" + str(self.parent.gameboard.startingLives))

@@ -4,11 +4,13 @@ Created on 9.4.2016
 @author: Rohmu
 '''
 
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QAbstractButton
+from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton
 from globals import *
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.Qt import QVBoxLayout
+from clickable_tower import ClickableTower
+from enemies import *
 
 
 class MapView(QFrame):
@@ -43,6 +45,15 @@ class MapView(QFrame):
             # Draws tower outline and range when a tower is being bought
             self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
+        
+        if len(self.parent.gameboard.enemiesSummoned) > 0:
+            
+            for enemy in self.parent.gameboard.enemiesSummoned:
+                pic = enemy.picture
+                label = QLabel()
+                label.setPixmap(pic)
+                label.move(enemy.posX, enemy.posY)
+                label.show()
         
         qp.end()
         
@@ -235,42 +246,22 @@ class MapView(QFrame):
                 self.statusBarMessage("Not enough money to upgrade.")
         
         else:
-            self.statusBarMessage("Tower already at maximum level.")
-            
-               
-
-class ClickableTower(QAbstractButton):
-    
-    def __init__(self, tower, parent):
-        super(ClickableTower, self).__init__(parent)
-        self.pixmap = tower.picture
-        self.parent = parent
-        self.tower = tower
-    
-        self.pressed.connect(self.click)
+            self.statusBarMessage("Tower already at maximum level.")   
     
     
-    def paintEvent(self, event):
+    def moveEnemies(self):
         
-        pix = self.pixmap
-        painter = QPainter()
-        painter.begin(self)
-        painter.drawPixmap(event.rect(), pix)
+        noOfSummonedEnemies = len(self.parent.gameboard.enemiesSummoned)
         
-    
-    def enterEvent(self, event):
-        self.parent.getParent().setIsTowerBeingHovered(True, self.tower)
-        self.parent.getParent().update()
-
-
-    def leaveEvent(self, event):
-        self.parent.getParent().setIsTowerBeingHovered(False, None)
-        self.parent.getParent().update()
-    
-    
-    def sizeHint(self):
-        return self.pixmap.size()
-
-    
-    def click(self):
-        self.parent.towerClick(self.tower)
+        if noOfSummonedEnemies > 0:
+            i = 0
+            while i < noOfSummonedEnemies:
+                enemy = self.parent.gameboard.enemiesSummoned[i]
+                if not enemy.isFinished:
+                    if enemy.checkIfFinished():
+                        self.parent.gameboard.currentLives -= 1
+                        if self.parent.gameboard.currentLives <= 0:
+                            self.parent.loseGame()
+                    else:
+                        self.parent.gameboard.enemiesSummoned[i].move()
+        self.update()       

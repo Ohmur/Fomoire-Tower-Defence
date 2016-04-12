@@ -17,10 +17,13 @@ class Gameboard:
         self._money = 100
         self._noOfWaves = 0
         self._currentWave = 1
+        self._currenEnemy = 1
+        self._isWaveInProgress = False
         self._waves = []
         self._towersAvailable = []
         self._towersBuild = []
         self._enemyPath = []
+        self._enemiesSummoned = []
         self._river = []
         self._occupied = []
         self._unoccupied = []
@@ -71,7 +74,7 @@ class Gameboard:
                                     towerlist = line_parts[1].split(",")
                                     for tower in towerlist:
                                         self._towersAvailable.append(tower.strip().lower())
-                                        #I have to add code that checks if the tower _name is correct before adding it.
+                                        # I have to add code that checks if the tower _name is correct before adding it.
                                     
                             current_line = mapData.readline()
                                     
@@ -139,7 +142,6 @@ class Gameboard:
                                         current_line = mapData.readline()
                                 
                                 current_line = mapData.readline()
-                            
                         else:
                             raise CorruptedMapFileError("Map size info not before map layout.")
                 else:
@@ -148,12 +150,47 @@ class Gameboard:
             
             mapData.close()
             
+            self.sortEnemyPath(self._enemyPath)
+            
             return -1
         
         except IOError:
             raise CorruptedMapFileError("Reading the map data failed.")
         
+    
+    def sortEnemyPath(self, path):
+        # First we look for the first coordinate. For this sorting algorithm to work the path has to start from left edge of the map.
+        # Another option would be to give in the map file the coordinates for the starting location. I could implement that later, if I have time.
+        i = 0
+        while i < len(path):
+            if path[i][0] == 0:
+                temp = path[0]
+                path[0] = path[i]
+                path[i] = temp
+                break
+            i += 1
         
+        # Then we sort the rest
+        x = 1
+        while x < len(path):
+            y = x
+            while y < len(path):
+                if path[y][0] == path[x-1][0] and ((path[y][1] == path[x-1][1] - 1) or (path[y][1] == path[x-1][1] + 1)):
+                    temp = path[x]
+                    path[x] = path[y]
+                    path[y] = temp
+                    y += 1
+                    break
+                elif path[y][1] == path[x-1][1] and ((path[y][0] == path[x-1][0] - 1) or (path[y][0] == path[x-1][0] + 1)):
+                    temp = path[x]
+                    path[x] = path[y]
+                    path[y] = temp
+                    y += 1
+                    break
+                y += 1
+            x += 1
+    
+    
     def setMapName(self, name):
         self._name = name
         
@@ -244,14 +281,38 @@ class Gameboard:
     
     def getBuildTowers(self):
         return self._towersBuild
+ 
     
+    def addSummonedEnemy(self, enemy):
+        self._enemiesSummoned.append(enemy)
+    
+ 
+    def getEnemiesSummoned(self):
+        return self._enemiesSummoned
+    
+    
+    def getCurrentEnemy(self):
+        return self._currenEnemy
+    
+    
+    def setCurrentEnemy(self, enemyIndex):
+        self._currenEnemy = enemyIndex
+        
+    
+    def setCurrentWave(self, waveIndex):
+        self._currentWave = waveIndex
+       
+       
+    def getWaves(self):
+        return self._waves 
+        
     
     def removeFromUnoccupied(self, coordinates):
         self._unoccupied.remove(coordinates)
 
         
     def printMapInfo(self):
-        #I made this to check if the readMapData method worked properly.
+        # I made this to check if the readMapData method worked properly.
         print("Map _name " + str(self._name) + "\n"
               +"Height " + str(self._height) + " and _width " + str(self._width) + "\n"
               +"Starting lives " + str(self._startingLives) + "\n"
@@ -268,14 +329,26 @@ class Gameboard:
     name = property(getName)
     height = property(getHeight)
     width = property(getWidth)
-    currentLives = property(getCurrentLives)
+    currentLives = property(getCurrentLives, setCurrentLives)
     startingLives = property(getStartingLives)
     money = property(getMoney)
-    currentWave = property(getCurrentWave)
+    currentWave = property(getCurrentWave, setCurrentWave)
+    currentEnemy = property(getCurrentEnemy, setCurrentEnemy)
     noOfWaves = property(getNoOfWaves)
+    waves = property(getWaves)
     enemyPath = property(getEnemyPath)
     occupied = property(getOccupied)
     river = property(getRiver)
     road = property(getRoad)
     unoccupied = property(getUnoccupied)
+    enemiesSummoned = property(getEnemiesSummoned)
+    
+    
+def main():
+    
+    gameboard1 = Gameboard()
+    gameboard1.readMapData("Map1.txt")
+    gameboard1.printMapInfo()
+
+main()
     

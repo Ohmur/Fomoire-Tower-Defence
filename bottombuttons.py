@@ -4,11 +4,11 @@ Created on 9.4.2016
 @author: Rohmu
 '''
 
-from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber, QAbstractButton
-from PyQt5.QtGui import QPainter
+from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber
 from globals import *
 from tower import *
 from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer
+from buy_button import BuyButton
 
 
 class BottomButtons(QFrame):
@@ -76,6 +76,8 @@ class BottomButtons(QFrame):
         self.pauseButton = QPushButton("Pause", self)
         self.pauseButton.clicked.connect(self.pauseGame)
     
+        # I could add a restart button
+        
         vbox2.addWidget(self.pauseButton)
         
         self.grid.addLayout(vbox2, 0, 2)
@@ -85,7 +87,7 @@ class BottomButtons(QFrame):
     
     '''
     # These methods draw the tower stats into the bottom of the screen when a tower is being bought.
-    # For some reason these methods make the timer not work and the game starts to lag.
+    # For some reason these methods make the _timer not work and the game starts to lag.
     
     def paintEvent(self, event):
 
@@ -174,34 +176,3 @@ class BottomButtons(QFrame):
         self.parent.statusBar().showMessage(message)
         
         
-class BuyButton(QAbstractButton):
-    # This is a picture button that changes appearance when howered and clicked.
-    def __init__(self, pixmap, pixmap_hover, pixmap_pressed, parent):
-        super(BuyButton, self).__init__(parent)
-        self.pixmap = pixmap
-        self.pixmap_hover = pixmap_hover
-        self.pixmap_pressed = pixmap_pressed
-
-        self.pressed.connect(self.update)
-        self.released.connect(self.update)
-
-
-    def paintEvent(self, event):
-        pix = self.pixmap_hover if self.underMouse() else self.pixmap
-        if self.isDown():
-            pix = self.pixmap_pressed
-
-        painter = QPainter(self)
-        painter.drawPixmap(event.rect(), pix)
-
-
-    def enterEvent(self, event):
-        self.update()
-
-
-    def leaveEvent(self, event):
-        self.update()
-
-
-    def sizeHint(self):
-        return self.pixmap.size()

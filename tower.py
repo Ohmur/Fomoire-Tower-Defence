@@ -89,6 +89,7 @@ class Tower(object):
 class Musketeer(Tower):
     
     def __init__(self):
+        super().__init__()
         self._name = "Musketeer"
         self._range = 65
         self._fireRate = 2
@@ -110,7 +111,8 @@ class Musketeer(Tower):
 
 class Cannon(Tower):
     
-    def __init__(self):    
+    def __init__(self):
+        super().__init__()
         self._name = "Cannon"
         self._range = 100
         self._fireRate = 3
