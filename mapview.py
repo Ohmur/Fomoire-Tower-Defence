@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QPoint
 from PyQt5.Qt import QVBoxLayout
 from clickable_tower import ClickableTower
 from clickable_enemy import ClickableEnemy
-from enemies import *
+from enemy import *
 
 
 class MapView(QFrame):
@@ -261,10 +261,10 @@ class MapView(QFrame):
                 
                 if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
                     
-                    if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath)):
+                    if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
                         self.parent.checkIsWaveDone()
     
-                    elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath)):
+                    elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
                         self.parent.checkIsWaveDone()
     
     
@@ -274,10 +274,10 @@ class MapView(QFrame):
         waveIndex = self.parent.gameboard.currentWave - 1
         
         if self.parent.gameboard.waves[waveIndex][1][enemyIndex] == name:
-            clickableEnemy = ClickableEnemy(enemyType, self)
-            clickableEnemy.move(enemyType.posX, enemyType.posY)
-            clickableEnemy.show()
-            self.parent.gameboard.addSummonedEnemy(enemyType, clickableEnemy)
+            enemy = enemyType
+            enemy.move(enemy.posX, enemy.posY)
+            enemy.show()
+            self.parent.gameboard.addSummonedEnemy(enemy)
             self.parent.gameboard.currentEnemy += 1
             return True
         
@@ -292,13 +292,13 @@ class MapView(QFrame):
         if noOfSummonedEnemies > 0:
             i = 0
             while i < noOfSummonedEnemies:
-                enemy = self.parent.gameboard.enemiesSummoned[i][0]
-                clickableEnemy = self.parent.gameboard.enemiesSummoned[i][1]
+                enemy = self.parent.gameboard.enemiesSummoned[i]
                 if not enemy.isFinished:
-                    enemy.move()
-                    clickableEnemy.move(enemy.posX, enemy.posY)
+                    enemy.moveEnemy() #calculates the new posX and posY
+                    enemy.move(enemy.posX, enemy.posY - 20)
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
+                        self.parent.update()
                         if self.parent.gameboard.currentLives <= 0:
                             self.parent.loseGame()      
                 i += 1         

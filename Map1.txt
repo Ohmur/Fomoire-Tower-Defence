@@ -7,11 +7,11 @@ towers: t1, t2
 
 #waves 
 number of waves: 5
-10, e1, e1, e1, e1
-9, e1, e1, e1, e1, e1, e2
-8, e1, e2, e1, e1, e1, e1, e2, e2
-7, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
-5, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+100, e1, e1, e1, e1
+90, e1, e1, e1, e1, e1, e2
+80, e1, e2, e1, e1, e1, e1, e2, e2
+70, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
+60, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
 
 #map
 ++++++++++++++++++++++++++++RRR+++++++++++++++++++

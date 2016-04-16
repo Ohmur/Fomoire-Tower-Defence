@@ -283,8 +283,8 @@ class Gameboard:
         return self._towersBuild
  
     
-    def addSummonedEnemy(self, enemy, enemyLabel):
-        self._enemiesSummoned.append([enemy, enemyLabel])
+    def addSummonedEnemy(self, enemy):
+        self._enemiesSummoned.append(enemy)
     
  
     def getEnemiesSummoned(self):
@@ -343,7 +343,7 @@ class Gameboard:
     unoccupied = property(getUnoccupied)
     enemiesSummoned = property(getEnemiesSummoned)
     
-    
+'''   
 def main():
     
     gameboard1 = Gameboard()
@@ -351,4 +351,4 @@ def main():
     gameboard1.printMapInfo()
 
 main()
-    
+'''

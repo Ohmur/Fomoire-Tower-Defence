@@ -4,13 +4,17 @@ Created on 24.3.2016
 @author: Rohmu
 '''
 
+from PyQt5.QtWidgets import QAbstractButton
+from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPixmap
 from math import floor 
 
 
-class Enemy(object):
+class Enemy(QAbstractButton):
     
-    def __init__(self, path):
+    def __init__(self, path, parent):
+        super(Enemy, self).__init__(parent)
+        self._parent = parent
         self._path = path
         self._size = 2
         self._isFinished = False
@@ -22,9 +26,11 @@ class Enemy(object):
         self._blocksMoved = 0
         self._currentBlock = self._path[0]
         self._nextBlock = self._path[1]
+        
+        self.pressed.connect(self.click)
     
     
-    def move(self):
+    def moveEnemy(self):
         # First we check which way the enemy needs to move and move them
         if self._currentBlock[0] < self._nextBlock[0]:
             self._position_x += self._speed
@@ -50,11 +56,26 @@ class Enemy(object):
     
     
     def checkIfFinished(self):
-        if self._blocksMoved == len(self._path):
+        if self._blocksMoved == len(self._path) - 1:
             self.setIsFinished(True)
             return True
         else:
             return False
+    
+    
+    def paintEvent(self, event):
+        
+        painter = QPainter()
+        painter.begin(self)
+        painter.drawPixmap(event.rect(), self._picture)
+            
+    
+    def sizeHint(self):
+        return self.picture.size()
+
+    
+    def click(self):
+        self.parent.enemyClick(self.enemy)
     
         
     def getPath(self):
@@ -91,7 +112,11 @@ class Enemy(object):
     
     def getPicture(self):
         return self._picture
-
+    
+    
+    def getName(self):
+        return self._name
+    
 
     def getCurrentBlock(self):
         return self._currentBlock
@@ -119,12 +144,13 @@ class Enemy(object):
     currentBlock = property(getCurrentBlock, setCurrentBlock)
     speed = property(getSpeed)
     health = property(getHealth)
+    name = property(getName)
 
 
 class Barbarian(Enemy):
     
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, path, parent):
+        super().__init__(path, parent)
         self._name = "Barbarian"
         self._health = 100
         self._speed = 3
@@ -134,8 +160,8 @@ class Barbarian(Enemy):
         
 class Berserker(Enemy):
     
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, path, parent):
+        super().__init__(path, parent)
         self._name = "Berserker"
         self._health = 80
         self._speed = 4

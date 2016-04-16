@@ -40,7 +40,6 @@ class BottomButtons(QFrame):
         vbox.addLayout(hbox)
         self.grid.addLayout(vbox, 0, 0)
         
-
         towers = gameboard.getTowers()
         i = 0
         buttons = 0

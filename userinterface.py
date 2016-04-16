@@ -13,7 +13,7 @@ from PyQt5.Qt import QVBoxLayout, QBasicTimer
 from bottombuttons import BottomButtons
 from gamestats import GameStats
 from mapview import MapView
-from enemies import *
+from enemy import *
 import time
         
 
