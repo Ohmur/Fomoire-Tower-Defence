@@ -199,36 +199,46 @@ class MapView(QFrame):
         
             grid = QGridLayout()
             self.popUp.setLayout(grid)
-        
-            #I need to set fxed decimals here.
+            
+            vbox = QVBoxLayout()
+            pixmap = QLabel()
+            pixmap.setPixmap(tower.picture)
+            vbox.addStretch()
+            vbox.addWidget(pixmap)
+            vbox.addStretch()
+            
+            grid.addLayout(vbox, 0, 0)
+            
+            #I need to set fixed decimals here.
             towerStats = QLabel(tower.name + " Tower Stats", self)
             power = QLabel("Power: " + str(tower.power), self)
             towerRange = QLabel("Range: " + str(tower.range), self)
             fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
             level = QLabel("Level: " + str(tower.level), self)
         
-            vbox = QVBoxLayout()
-            vbox.addWidget(towerStats)
-            vbox.addWidget(power)
-            vbox.addWidget(towerRange)
-            vbox.addWidget(fireRate)
-            vbox.addWidget(level)
-        
-            grid.addLayout(vbox, 0, 0)
-        
             vbox2 = QVBoxLayout()
+            vbox2.addWidget(towerStats)
+            vbox2.addWidget(power)
+            vbox2.addWidget(towerRange)
+            vbox2.addWidget(fireRate)
+            vbox2.addWidget(level)
+        
+            grid.addLayout(vbox2, 0, 1)
+        
+            vbox3 = QVBoxLayout()
+            
         
             if self.clickedTower.maxLevel > self.clickedTower.level:
                 upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
-                vbox2.addWidget(upgradeButton)
+                vbox3.addWidget(upgradeButton)
                 upgradeButton.clicked.connect(self.upgrade)
             else:
                 maxLevel = QLabel("Tower at maximum level.")
-                vbox2.addWidget(maxLevel)
+                vbox3.addWidget(maxLevel)
             
             doneButton = QPushButton("Done")
-            vbox2.addWidget(doneButton)
-            grid.addLayout(vbox2, 0, 1)
+            vbox3.addWidget(doneButton)
+            grid.addLayout(vbox3, 0, 2)
         
             self.popUp.show()
             doneButton.clicked.connect(self.popUp.deleteLater)
@@ -302,5 +312,42 @@ class MapView(QFrame):
                         if self.parent.gameboard.currentLives <= 0:
                             self.parent.loseGame()      
                 i += 1         
-        self.update()       
+        self.update()
+        
+    
+    def enemyClick(self, enemy):
+        #Opens an info screen on the enemy.
+        
+        if self.parent.isTowerSelected == False:
+            self.statusBarMessage("Enemy clicked")
+            self.popUp = QFrame()
+            self.popUp.setGeometry(500, 500, 100, 100)
+        
+            grid = QGridLayout()
+            self.popUp.setLayout(grid)
+        
+            #I need to set fxed decimals here.
+            enemyStats = QLabel("Enemy Stats", self)
+            name = QLabel("Name: " + str(enemy.name), self)
+            speed = QLabel("Speed: " + str(enemy.speed), self)
+            pixmap = QLabel()
+            pixmap.setPixmap(enemy.picture)
+        
+            vbox = QVBoxLayout()
+            vbox.addWidget(enemyStats)
+            vbox.addWidget(name)
+            vbox.addWidget(speed)
+
+            grid.addLayout(vbox, 0, 0)
+        
+            vbox2 = QVBoxLayout()
+            vbox2.addWidget(pixmap)
+            vbox2.addStretch()
+            
+            doneButton = QPushButton("Done")
+            vbox2.addWidget(doneButton)
+            grid.addLayout(vbox2, 0, 1)
+        
+            self.popUp.show()
+            doneButton.clicked.connect(self.popUp.deleteLater)
     

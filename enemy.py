@@ -75,7 +75,7 @@ class Enemy(QAbstractButton):
 
     
     def click(self):
-        self.parent.enemyClick(self.enemy)
+        self._parent.enemyClick(self)
     
         
     def getPath(self):
