@@ -46,16 +46,6 @@ class MapView(QFrame):
             self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
-        '''
-        if len(self.parent.gameboard.enemiesSummoned) > 0:
-            
-            for enemy in self.parent.gameboard.enemiesSummoned:
-                pic = enemy.picture
-                label = QLabel()
-                label.setPixmap(pic)
-                label.move(enemy.posX, enemy.posY)
-                label.show()
-        '''
         qp.end()
         
         
@@ -201,7 +191,10 @@ class MapView(QFrame):
             
             vbox = QVBoxLayout()
             pixmap = QLabel()
-            pixmap.setPixmap(tower.picture)
+            if tower.level == 2:
+                pixmap.setPixmap(tower.upgradedPicture)
+            else:
+                pixmap.setPixmap(tower.picture)
             vbox.addStretch()
             vbox.addWidget(pixmap)
             vbox.addStretch()
@@ -231,6 +224,7 @@ class MapView(QFrame):
                 upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
                 vbox3.addWidget(upgradeButton)
                 upgradeButton.clicked.connect(self.upgrade)
+                
             else:
                 maxLevel = QLabel("Tower at maximum level.")
                 vbox3.addWidget(maxLevel)
@@ -312,7 +306,8 @@ class MapView(QFrame):
                         self.parent.update()
                         if self.parent.gameboard.currentLives <= 0:
                             self.parent.loseGame()      
-                i += 1         
+                i += 1        
+                 
         self.update()
         
     

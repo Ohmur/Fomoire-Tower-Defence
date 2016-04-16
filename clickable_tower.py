@@ -12,6 +12,7 @@ class ClickableTower(QAbstractButton):
     def __init__(self, tower, parent):
         super(ClickableTower, self).__init__(parent)
         self.pixmap = tower.picture
+        self.upgraded = tower.upgradedPicture
         self.parent = parent
         self.tower = tower
     
@@ -20,7 +21,11 @@ class ClickableTower(QAbstractButton):
     
     def paintEvent(self, event):
         
-        pix = self.pixmap
+        if self.tower.level == 2:
+            pix = self.upgraded
+        else:
+            pix = self.pixmap
+            
         painter = QPainter()
         painter.begin(self)
         painter.drawPixmap(event.rect(), pix)

@@ -25,7 +25,8 @@ class BottomButtons(QFrame):
         
     def initUI(self, gameboard): 
         
-        self.setStyleSheet("QWidget { background: #D1D1D1}")
+        self.setStyleSheet("QWidget { background: #BCBCBC}")
+        self.setFrameStyle(QFrame.Sunken | QFrame.StyledPanel)
         self.setFixedSize((gameboard.width - 1)*blockSize, 120)
         self.grid = QGridLayout()
         self.setLayout(self.grid)
@@ -33,10 +34,10 @@ class BottomButtons(QFrame):
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
         
-        buildLabel = QLabel('Build', self)
+        buildLabel = QLabel()
+        buildLabel.setPixmap(QPixmap("build.png"))
         buildLabel.move(10, 0)
         vbox.addWidget(buildLabel)
-        vbox.addStretch()
         vbox.addLayout(hbox)
         self.grid.addLayout(vbox, 0, 0)
         
@@ -48,13 +49,13 @@ class BottomButtons(QFrame):
         while i < len(towers):
             if towers[i] == "t1":
                 # I should add the price to the picture
-                self.musketeerButton = BuyButton(QPixmap("musketeer.png"), QPixmap("musketeer_hover.png"), QPixmap("musketeer_pressed.png"), self)
+                self.musketeerButton = BuyButton(QPixmap("musketeer_buybutton.png"), QPixmap("musketeer_buybutton_hover.png"), QPixmap("musketeer_buybutton_pressed.png"), self)
                 self.musketeerButton.move(buttons*towerButtonSize + 10, 50)
                 self.musketeerButton.clicked.connect(self.musketeerButtonClick)
                 hbox.addWidget(self.musketeerButton)
                 buttons += 1
             elif towers[i] == "t2":
-                self.cannonButton = BuyButton(QPixmap("cannon.png"), QPixmap("cannon_hover.png"), QPixmap("cannon_pressed.png"), self)
+                self.cannonButton = BuyButton(QPixmap("cannon_buybutton.png"), QPixmap("cannon_buybutton_hovered.png"), QPixmap("cannon_buybutton_pressed.png"), self)
                 self.cannonButton.move(buttons*towerButtonSize + 10, 50)
                 self.cannonButton.clicked.connect(self.cannonButtonClick)
                 hbox.addWidget(self.cannonButton)
@@ -69,6 +70,7 @@ class BottomButtons(QFrame):
         
         self.lcd = QLCDNumber(self)
         
+        vbox2.addStretch()
         vbox2.addWidget(self.lcd)
         vbox2.addStretch()
         

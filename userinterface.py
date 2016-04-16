@@ -122,15 +122,15 @@ class UserInterface(QMainWindow):
         
         vbox = QVBoxLayout()
         
-        youLost = QLabel("You lost.")
-        youLost.move(25, 50)
+        youLost = QLabel()
+        youLost.setPixmap(QPixmap("game_over.png"))
         vbox.addWidget(youLost)
         
         doneButton = QPushButton("Done")
         vbox.addWidget(doneButton)
 
         self.popUp.setLayout(vbox)
-        self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 40, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
+        self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 130, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
         self.popUp.show()
         doneButton.clicked.connect(self.popUp.deleteLater)
     

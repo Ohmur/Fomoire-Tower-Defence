@@ -72,6 +72,10 @@ class Tower(object):
         return self._maxLevel
     
     
+    def getUpgradedPicture(self):
+        return self._upgradedPicture
+    
+    
     name = property(getName)
     range = property(getRange)
     fireRate = property(getFireRate)
@@ -81,6 +85,7 @@ class Tower(object):
     level = property(getLevel)
     maxLevel = property(getMaxLevel)
     picture = property(getPicture)
+    upgradedPicture = property(getUpgradedPicture)
     posX = property(getPositionX)
     posY = property(getPositionY)
     center = property(getCenter)
@@ -100,6 +105,7 @@ class Musketeer(Tower):
         self._level = 1
         self._maxLevel = 2
         self._picture = QPixmap("musketeer.png")
+        self._upgradedPicture = QPixmap("musketeer_upgraded.png")
     
     
     def upgrade(self):
@@ -123,6 +129,7 @@ class Cannon(Tower):
         self._level = 1
         self._maxLevel = 2
         self._picture = QPixmap("cannon.png")
+        self._upgradedPicture = QPixmap("cannon_upgraded.png")
         
     def upgrade(self):
         self._power += self._power / 2
