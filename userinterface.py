@@ -5,11 +5,11 @@ Created on 6.3.2016
 '''
 
 import sys
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFrame, QLabel, QPushButton
 from globals import *
 from gameboard import Gameboard
 from tower import *
-from PyQt5.Qt import QVBoxLayout, QBasicTimer
+from PyQt5.Qt import QVBoxLayout, QBasicTimer, QHBoxLayout
 from bottombuttons import BottomButtons
 from gamestats import GameStats
 from mapview import MapView
@@ -30,7 +30,7 @@ class UserInterface(QMainWindow):
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData("Map1.txt")
+        self._gameboard.readMapData("Map2.txt")
         self.initUI()
         self.timer.start(gameSpeed, self)
         
@@ -116,6 +116,23 @@ class UserInterface(QMainWindow):
         self.bottomButtons.clockTimer.stop()
         self.timer.stop()
         self.statusBar().showMessage('Game has ended. You lost.')
+        
+        self.popUp = QFrame()
+        self.popUp.setGeometry(500, 500, 100, 100)
+        
+        vbox = QVBoxLayout()
+        
+        youLost = QLabel("You lost.")
+        youLost.move(25, 50)
+        vbox.addWidget(youLost)
+        
+        doneButton = QPushButton("Done")
+        vbox.addWidget(doneButton)
+
+        self.popUp.setLayout(vbox)
+        self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 40, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
+        self.popUp.show()
+        doneButton.clicked.connect(self.popUp.deleteLater)
     
     
     def winGame(self):

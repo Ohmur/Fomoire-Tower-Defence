@@ -6,11 +6,10 @@ Created on 9.4.2016
 
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton
 from globals import *
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QCursor
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.Qt import QVBoxLayout
 from clickable_tower import ClickableTower
-from clickable_enemy import ClickableEnemy
 from enemy import *
 
 
@@ -240,6 +239,8 @@ class MapView(QFrame):
             vbox3.addWidget(doneButton)
             grid.addLayout(vbox3, 0, 2)
         
+            location = QPoint(QCursor.pos())
+            self.popUp.move(location.x() - 180, location.y())
             self.popUp.show()
             doneButton.clicked.connect(self.popUp.deleteLater)
     
@@ -305,7 +306,7 @@ class MapView(QFrame):
                 enemy = self.parent.gameboard.enemiesSummoned[i]
                 if not enemy.isFinished:
                     enemy.moveEnemy() #calculates the new posX and posY
-                    enemy.move(enemy.posX, enemy.posY - 20)
+                    enemy.move(enemy.posX, enemy.posY - blockSize)
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
                         self.parent.update()
@@ -347,7 +348,9 @@ class MapView(QFrame):
             doneButton = QPushButton("Done")
             vbox2.addWidget(doneButton)
             grid.addLayout(vbox2, 0, 1)
-        
+            
+            location = QPoint(QCursor.pos())
+            self.popUp.move(location.x() - 100, location.y())
             self.popUp.show()
             doneButton.clicked.connect(self.popUp.deleteLater)
     
