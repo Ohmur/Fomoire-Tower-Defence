@@ -43,10 +43,11 @@ class BottomButtons(QFrame):
         buildLabel.setFont(font)
         '''
         
-        buildLabel = QLabel()
-        buildLabel.setPixmap(QPixmap("build.png"))
+        towerLabel = QLabel()
+        towerLabel.setPixmap(QPixmap("tower.png"))
         
-        vbox.addWidget(buildLabel)
+        vbox.addWidget(towerLabel)
+        
         vbox.addLayout(hbox)
         self.grid.addLayout(vbox, 0, 0)
         
