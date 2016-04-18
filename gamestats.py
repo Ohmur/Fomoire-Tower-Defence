@@ -42,12 +42,13 @@ class GameStats(QFrame):
         
         self.hearts = []
         heart = QPixmap('heart.png')
+        self.heart_lost = QPixmap('heart_lost.png')
         i = 1
         
         while i <= gameboard.startingLives:
             heartLabel = QLabel(self)
             heartLabel.setPixmap(heart)
-            self.hearts.append(heartLabel)
+            self.hearts.append([True, heartLabel])
             heartLabel.move((gameboard.width - 1)*blockSize - (2 + i * 10), 18)
             heartLabel.show()
             i += 1
@@ -72,5 +73,11 @@ class GameStats(QFrame):
         else:
             qp.drawText((self.parent.gameboard.width - 1)*blockSize / 2 + 15, 28, str(len(self.parent.gameboard.waves)) + " / " + str(self.parent.gameboard.noOfWaves))
         
-        if self.startingLives > self.parent.gameboard.currentLives:
-            self.hearts[self.parent.gameboard.currentLives].setPixmap(QPixmap('heart_lost.png'))
+       
+        if self.startingLives > self.parent.gameboard.currentLives and self.hearts[self.parent.gameboard.currentLives][0] == True:
+            self.hearts[self.parent.gameboard.currentLives][1].setPixmap(self.heart_lost)
+            self.hearts[self.parent.gameboard.currentLives][0] = False
+        
+        '''
+        qp.drawText(event.rect(), Qt.AlignRight, "Lives " + str(self.parent.gameboard.currentLives) + "/" + str(self.parent.gameboard.startingLives))
+        '''

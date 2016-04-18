@@ -10,6 +10,7 @@ from globals import *
 from gameboard import Gameboard
 from tower import *
 from PyQt5.Qt import QVBoxLayout, QBasicTimer, QHBoxLayout
+from PyQt5.QtGui import QIcon
 from bottombuttons import BottomButtons
 from gamestats import GameStats
 from mapview import MapView
@@ -40,6 +41,7 @@ class UserInterface(QMainWindow):
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
         self.setWindowTitle(self._gameboard.name)
+        self.setWindowIcon(QIcon('berserker_icon.png')) #Apparently this doens't work the same way on mac.
         self.statusBar().showMessage('Ready')
         vbox = QVBoxLayout()
         centralWidget.setLayout(vbox)
