@@ -7,6 +7,7 @@ Created on 9.4.2016
 from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber
 from globals import *
 from tower import *
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer
 from buy_button import BuyButton
 
@@ -34,9 +35,17 @@ class BottomButtons(QFrame):
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
         
+        '''
+        font = QFont()
+        font.setPointSize(20)
+        
+        buildLabel = QLabel('Build')
+        buildLabel.setFont(font)
+        '''
+        
         buildLabel = QLabel()
         buildLabel.setPixmap(QPixmap("build.png"))
-        buildLabel.move(10, 0)
+        
         vbox.addWidget(buildLabel)
         vbox.addLayout(hbox)
         self.grid.addLayout(vbox, 0, 0)
@@ -74,7 +83,14 @@ class BottomButtons(QFrame):
         vbox2.addWidget(self.lcd)
         vbox2.addStretch()
         
-        self.pauseButton = QPushButton("Pause", self)
+        '''
+        self.pausePixmap = QPixmap("pause.png")
+        self.pauseIcon = QIcon(self.pausePixmap)
+        self.pauseButton = QPushButton()
+        self.pauseButton.setIcon(self.pauseIcon)
+        self.pauseButton.setIconSize(self.pausePixmap.rect().size())
+        '''
+        self.pauseButton = QPushButton('Pause')
         self.pauseButton.clicked.connect(self.pauseGame)
     
         # I could add a restart button
@@ -156,12 +172,22 @@ class BottomButtons(QFrame):
 
         if self.isPaused == False:
             self.statusBarMessage('Game paused')
-            self.pauseButton.setText('Play') 
+            '''
+            self.playPixmap = QPixmap("play.png")
+            self.playIcon = QIcon(self.playPixmap)
+            self.pauseButton.setIcon(self.playIcon) 
+            self.pauseButton.setIconSize(self.playPixmap.rect().size())
+            '''
+            self.pauseButton.setText('Play')
             self.isPaused = True 
             self.parent.timer.stop()  
             self.clockTimer.stop()
+            
         else:
             self.statusBarMessage('')
+            '''
+            self.pauseButton.setIcon(self.pauseIcon)
+            '''
             self.pauseButton.setText('Pause')
             self.isPaused = False 
             self.parent.timer.start(gameSpeed, self.parent)
