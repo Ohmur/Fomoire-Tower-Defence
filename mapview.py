@@ -70,60 +70,62 @@ class MapView(QFrame):
         # Method for building towers and checking that their location is ok
         if e.button() == Qt.LeftButton:
             
-            if self.parent.isTowerSelected == True:
-                # First we check the mouse location
-                self.mouse_x = e.pos().x()
-                self.mouse_y = e.pos().y()
-                
-                # We calculate the closest grid corner to find the center of the tower
-                closest_corner_x, closest_corner_y = self.calculateClosestCorner(self.mouse_x, self.mouse_y)
+            if self.parent.gameover == False:
+                if self.parent.isTowerSelected == True:
+                    # First we check the mouse location
+                    self.mouse_x = e.pos().x()
+                    self.mouse_y = e.pos().y()
                     
-                # We calculate the bottom right block for the tower
-                block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
-                
-                # We need to make sure that the tower doesn't go over the borders of the gameboard
-                if block1[0] > 0 and block1[1] > 0 and block1[0] < self.parent.gameboard.width and block1[1] < self.parent.gameboard.height:
-                    #Then we calculate the other blocks
-                    block2 = [block1[0] - 1, block1[1]]
-                    block3 = [block1[0] - 1, block1[1] - 1]
-                    block4 = [block1[0], block1[1] - 1]
+                    # We calculate the closest grid corner to find the center of the tower
+                    closest_corner_x, closest_corner_y = self.calculateClosestCorner(self.mouse_x, self.mouse_y)
                         
-                    blocks = [block1, block2, block3, block4]
-                    occupied = self.parent.gameboard.occupied
-                    canPlaceTower = True
+                    # We calculate the bottom right block for the tower
+                    block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
                     
-                    # We check that none of the tower blocks are occupied
-                    for block in blocks:
-                        if block in occupied:
-                            canPlaceTower = False
-                                
-                    if canPlaceTower == True:
-                        # We places the tower on the map
-                        tower = self.parent.selectedTower
-                        tower.setPosition(closest_corner_x, closest_corner_y)
+                    # We need to make sure that the tower doesn't go over the borders of the gameboard
+                    if block1[0] > 0 and block1[1] > 0 and block1[0] < self.parent.gameboard.width and block1[1] < self.parent.gameboard.height:
+                        #Then we calculate the other blocks
+                        block2 = [block1[0] - 1, block1[1]]
+                        block3 = [block1[0] - 1, block1[1] - 1]
+                        block4 = [block1[0], block1[1] - 1]
                             
-                        placedTower = ClickableTower(tower, self)
-                        placedTower.move(block3[0] * 20, block3[1] * 20)
-                        placedTower.show()
+                        blocks = [block1, block2, block3, block4]
+                        occupied = self.parent.gameboard.occupied
+                        canPlaceTower = True
                         
-                        # Then we add the tower blocks to the list of occupied tiles   
+                        # We check that none of the tower blocks are occupied
                         for block in blocks:
-                            self.parent.gameboard.addToOccupied(block)
+                            if block in occupied:
+                                canPlaceTower = False
+                                    
+                        if canPlaceTower == True:
+                            # We places the tower on the map
+                            tower = self.parent.selectedTower
+                            tower.setPosition(closest_corner_x, closest_corner_y)
+                                
+                            placedTower = ClickableTower(tower, self)
+                            placedTower.move(block3[0] * 20, block3[1] * 20)
+                            placedTower.show()
                             
-                        self.parent.gameboard.addBuildTower(tower)    
-                        self.parent.gameboard.buy(tower.price)
-                        self.parent.gamestats.update()
-                            
-                        self.statusBarMessage('Tower build') 
-                        self.parent.selectedTower = None
-                        self.parent.isTowerSelected = False
-                            
+                            # Then we add the tower blocks to the list of occupied tiles   
+                            for block in blocks:
+                                self.parent.gameboard.addToOccupied(block)
+                                
+                            self.parent.gameboard.addBuildTower(tower)    
+                            self.parent.gameboard.buy(tower.price)
+                            self.parent.gamestats.update()
+                                
+                            self.statusBarMessage('Tower build') 
+                            self.parent.selectedTower = None
+                            self.parent.isTowerSelected = False
+                                
+                        else:
+                            self.statusBarMessage("Can't place it there")
+                                
                     else:
-                        self.statusBarMessage("Can't place it there")
-                            
-                else:
-                        self.statusBarMessage("Can't place it there")          
-
+                            self.statusBarMessage("Can't place it there")                      
+            else:
+                self.statusBarMessage("The game has ended. You can't build towers.")    
         else:
             # If we click the right mouse button we cancel the tower selection
             self.parent.selectedTower = None
@@ -181,64 +183,69 @@ class MapView(QFrame):
     def towerClick(self, tower):
         #Should open a menu to upgrade tower, and to see it's stats somewhere.
         
-        if self.parent.isTowerSelected == False:
-            self.clickedTower = tower
-            self.statusBarMessage("Tower clicked")
-            self.popUp = QFrame()
-            self.popUp.setGeometry(500, 500, 100, 100)
-        
-            grid = QGridLayout()
-            self.popUp.setLayout(grid)
+        if self.parent.gameover == False:
             
-            vbox = QVBoxLayout()
-            pixmap = QLabel()
-            if tower.level == 2:
-                pixmap.setPixmap(tower.upgradedPicture)
-            else:
-                pixmap.setPixmap(tower.picture)
-            vbox.addStretch()
-            vbox.addWidget(pixmap)
-            vbox.addStretch()
+            if self.parent.isTowerSelected == False:
+                self.clickedTower = tower
+                self.statusBarMessage("Tower clicked")
+                self.popUp = QFrame()
+                self.popUp.setGeometry(500, 500, 100, 100)
             
-            grid.addLayout(vbox, 0, 0)
-            
-            #I need to set fixed decimals here.
-            towerStats = QLabel(tower.name + " Tower Stats", self)
-            power = QLabel("Power: " + str(tower.power), self)
-            towerRange = QLabel("Range: " + str(tower.range), self)
-            fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
-            level = QLabel("Level: " + str(tower.level), self)
-        
-            vbox2 = QVBoxLayout()
-            vbox2.addWidget(towerStats)
-            vbox2.addWidget(power)
-            vbox2.addWidget(towerRange)
-            vbox2.addWidget(fireRate)
-            vbox2.addWidget(level)
-        
-            grid.addLayout(vbox2, 0, 1)
-        
-            vbox3 = QVBoxLayout()
-            
-        
-            if self.clickedTower.maxLevel > self.clickedTower.level:
-                upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
-                vbox3.addWidget(upgradeButton)
-                upgradeButton.clicked.connect(self.upgrade)
+                grid = QGridLayout()
+                self.popUp.setLayout(grid)
                 
-            else:
-                maxLevel = QLabel("Tower at maximum level.")
-                vbox3.addWidget(maxLevel)
+                vbox = QVBoxLayout()
+                pixmap = QLabel()
+                if tower.level == 2:
+                    pixmap.setPixmap(tower.upgradedPicture)
+                else:
+                    pixmap.setPixmap(tower.picture)
+                vbox.addStretch()
+                vbox.addWidget(pixmap)
+                vbox.addStretch()
+                
+                grid.addLayout(vbox, 0, 0)
+                
+                #I need to set fixed decimals here.
+                towerStats = QLabel(tower.name + " Tower Stats", self)
+                power = QLabel("Power: " + str(tower.power), self)
+                towerRange = QLabel("Range: " + str(tower.range), self)
+                fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
+                level = QLabel("Level: " + str(tower.level), self)
             
-            doneButton = QPushButton("Done")
-            vbox3.addWidget(doneButton)
-            grid.addLayout(vbox3, 0, 2)
+                vbox2 = QVBoxLayout()
+                vbox2.addWidget(towerStats)
+                vbox2.addWidget(power)
+                vbox2.addWidget(towerRange)
+                vbox2.addWidget(fireRate)
+                vbox2.addWidget(level)
+            
+                grid.addLayout(vbox2, 0, 1)
+            
+                vbox3 = QVBoxLayout()
+                
+            
+                if self.clickedTower.maxLevel > self.clickedTower.level:
+                    upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
+                    vbox3.addWidget(upgradeButton)
+                    upgradeButton.clicked.connect(self.upgrade)
+                    
+                else:
+                    maxLevel = QLabel("Tower at maximum level.")
+                    vbox3.addWidget(maxLevel)
+                
+                doneButton = QPushButton("Done")
+                vbox3.addWidget(doneButton)
+                grid.addLayout(vbox3, 0, 2)
+            
+                location = QPoint(QCursor.pos())
+                self.popUp.move(location.x() - 180, location.y())
+                self.popUp.show()
+                doneButton.clicked.connect(self.popUp.deleteLater)
         
-            location = QPoint(QCursor.pos())
-            self.popUp.move(location.x() - 180, location.y())
-            self.popUp.show()
-            doneButton.clicked.connect(self.popUp.deleteLater)
-    
+        else:
+            self.statusBarMessage("The game has ended.")
+            
     
     def upgrade(self):
         
@@ -315,38 +322,42 @@ class MapView(QFrame):
     def enemyClick(self, enemy):
         #Opens an info screen on the enemy.
         
-        if self.parent.isTowerSelected == False:
-            self.statusBarMessage("Enemy clicked")
-            self.popUp = QFrame()
-            self.popUp.setGeometry(500, 500, 100, 100)
+        if self.parent.gameover == False:
         
-            grid = QGridLayout()
-            self.popUp.setLayout(grid)
-        
-            #I need to set fxed decimals here.
-            enemyStats = QLabel("Enemy Stats", self)
-            name = QLabel("Name: " + str(enemy.name), self)
-            speed = QLabel("Speed: " + str(enemy.speed), self)
-            pixmap = QLabel()
-            pixmap.setPixmap(enemy.picture)
-        
-            vbox = QVBoxLayout()
-            vbox.addWidget(enemyStats)
-            vbox.addWidget(name)
-            vbox.addWidget(speed)
-
-            grid.addLayout(vbox, 0, 0)
-        
-            vbox2 = QVBoxLayout()
-            vbox2.addWidget(pixmap)
-            vbox2.addStretch()
+            if self.parent.isTowerSelected == False:
+                self.statusBarMessage("Enemy clicked")
+                self.popUp = QFrame()
+                self.popUp.setGeometry(500, 500, 100, 100)
             
-            doneButton = QPushButton("Done")
-            vbox2.addWidget(doneButton)
-            grid.addLayout(vbox2, 0, 1)
+                grid = QGridLayout()
+                self.popUp.setLayout(grid)
             
-            location = QPoint(QCursor.pos())
-            self.popUp.move(location.x() - 100, location.y())
-            self.popUp.show()
-            doneButton.clicked.connect(self.popUp.deleteLater)
+                #I need to set fxed decimals here.
+                enemyStats = QLabel("Enemy Stats", self)
+                name = QLabel("Name: " + str(enemy.name), self)
+                speed = QLabel("Speed: " + str(enemy.speed), self)
+                pixmap = QLabel()
+                pixmap.setPixmap(enemy.picture)
+            
+                vbox = QVBoxLayout()
+                vbox.addWidget(enemyStats)
+                vbox.addWidget(name)
+                vbox.addWidget(speed)
     
+                grid.addLayout(vbox, 0, 0)
+            
+                vbox2 = QVBoxLayout()
+                vbox2.addWidget(pixmap)
+                vbox2.addStretch()
+                
+                doneButton = QPushButton("Done")
+                vbox2.addWidget(doneButton)
+                grid.addLayout(vbox2, 0, 1)
+                
+                location = QPoint(QCursor.pos())
+                self.popUp.move(location.x() - 100, location.y())
+                self.popUp.show()
+                doneButton.clicked.connect(self.popUp.deleteLater)
+        
+        else:
+            self.statusBarMessage("The game has ended. Stop doing stuff.")

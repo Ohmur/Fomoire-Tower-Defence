@@ -24,6 +24,8 @@ class UserInterface(QMainWindow):
         super().__init__()
         self._gameboard = Gameboard()
         
+        self._gameover = False
+        
         self._isTowerSelected = False
         self._isTowerHovered = False
         self._towerBeingHovered = None
@@ -95,6 +97,10 @@ class UserInterface(QMainWindow):
         return self._timePassed
     
     
+    def getGameOver(self):
+        return self._gameover
+    
+    
     def timerEvent(self, event):
         self._timePassed += 1
         self.mapView.summonEnemy()
@@ -118,6 +124,7 @@ class UserInterface(QMainWindow):
         self.bottomButtons.clockTimer.stop()
         self.timer.stop()
         self.statusBar().showMessage('Game has ended. You lost.')
+        self._gameover = True
         
         self.popUp = QFrame()
         self.popUp.setGeometry(500, 500, 100, 100)
@@ -141,6 +148,7 @@ class UserInterface(QMainWindow):
         self.bottomButtons.clockTimer.stop()
         self.timer.stop()
         self.statusBar().showMessage('Game has ended. You won.')
+        self._gameover = True
     
 
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
@@ -150,6 +158,7 @@ class UserInterface(QMainWindow):
     gamestats = property(getGameStats)
     gameboard = property(getGameboard)
     timePassed = property(getTimePassed)
+    gameover = property(getGameOver)
 
         
 if __name__ == '__main__':

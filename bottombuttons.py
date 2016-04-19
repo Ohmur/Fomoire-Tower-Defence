@@ -158,41 +158,48 @@ class BottomButtons(QFrame):
         
     def cannonButtonClick(self):
         
-        if self.isPaused == False:
-            if self.parent.gameboard.money > Cannon().price:
-                self.parent.isTowerSelected = True
-                self.parent.selectedTower = Cannon()
-                self.statusBarMessage('Cannon tower selected')
-            else:    
-                self.statusBarMessage("You don't have enough money.")
-        else:
-            self.statusBarMessage("The game is paused. You can't build towers.")
+        if self.parent.gameover == False:
+            if self.isPaused == False:
+                if self.parent.gameboard.money > Cannon().price:
+                    self.parent.isTowerSelected = True
+                    self.parent.selectedTower = Cannon()
+                    self.statusBarMessage('Cannon tower selected')
+                else:    
+                    self.statusBarMessage("You don't have enough money.")
+            else:
+                self.statusBarMessage("The game is paused. You can't build towers.")
+        else: self.statusBarMessage("The game has ended can't build towers.")
         
 
     def pauseGame(self, pressed):
-
-        if self.isPaused == False:
-            self.statusBarMessage('Game paused')
-            '''
-            self.playPixmap = QPixmap("play.png")
-            self.playIcon = QIcon(self.playPixmap)
-            self.pauseButton.setIcon(self.playIcon) 
-            self.pauseButton.setIconSize(self.playPixmap.rect().size())
-            '''
-            self.pauseButton.setText('Play')
-            self.isPaused = True 
-            self.parent.timer.stop()  
-            self.clockTimer.stop()
-            
+        
+        if self.parent.gameover == False:
+        
+            if self.isPaused == False:
+                self.statusBarMessage('Game paused')
+                '''
+                self.playPixmap = QPixmap("play.png")
+                self.playIcon = QIcon(self.playPixmap)
+                self.pauseButton.setIcon(self.playIcon) 
+                self.pauseButton.setIconSize(self.playPixmap.rect().size())
+                '''
+                self.pauseButton.setText('Play')
+                self.isPaused = True 
+                self.parent.timer.stop()  
+                self.clockTimer.stop()
+                
+            else:
+                self.statusBarMessage('')
+                '''
+                self.pauseButton.setIcon(self.pauseIcon)
+                '''
+                self.pauseButton.setText('Pause')
+                self.isPaused = False 
+                self.parent.timer.start(gameSpeed, self.parent)
+                self.clockTimer.start(1000, self)
+        
         else:
-            self.statusBarMessage('')
-            '''
-            self.pauseButton.setIcon(self.pauseIcon)
-            '''
-            self.pauseButton.setText('Pause')
-            self.isPaused = False 
-            self.parent.timer.start(gameSpeed, self.parent)
-            self.clockTimer.start(1000, self)
+            self.statusBarMessage('The game has ended.')
     
     
     def timerEvent(self, event):
