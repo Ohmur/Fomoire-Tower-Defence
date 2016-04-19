@@ -4,6 +4,7 @@ size: 20x50
 lives: 10
 money: 600
 towers: t1, t2
+path start: 0, 8
 
 #waves 
 number of waves: 5

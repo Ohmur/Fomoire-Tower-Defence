@@ -22,11 +22,14 @@ class Gameboard:
         self._waves = []
         self._towersAvailable = []
         self._towersBuild = []
+        self._pathStart = []
         self._enemyPath = []
         self._enemiesSummoned = []
         self._river = []
         self._occupied = []
         self._unoccupied = []
+        self._cave = []
+        self._mountain = []
         self._road = []
     
 
@@ -75,7 +78,15 @@ class Gameboard:
                                     for tower in towerlist:
                                         self._towersAvailable.append(tower.strip().lower())
                                         # I have to add code that checks if the tower _name is correct before adding it.
-                                    
+                                elif line_parts[0].strip().lower() == "path start":
+                                    coordinates = line_parts[1].split(",")
+                                    try:
+                                        for number in coordinates:
+                                            self._pathStart.append(int(number.strip().lower()))
+                                    except ValueError:
+                                        raise CorruptedMapFileError("Reading path start coordinate failed.")
+                                    if len(self._pathStart) != 2:
+                                        raise CorruptedMapFileError("Reading path start coordinate failed.")
                             current_line = mapData.readline()
                                     
                 elif current_line.strip().lower() == "#waves":
@@ -135,6 +146,12 @@ class Gameboard:
                                                 self._occupied.append([x, y])
                                                 self._road.append([x, y])
                                                 self._enemyPath.append([x, y])
+                                            elif symbol == "C":
+                                                self._occupied.append([x, y])
+                                                self._cave.append([x, y])
+                                            elif symbol == "M":
+                                                self._occupied.append([x, y])
+                                                self._mountain.append([x, y])
                                             else:
                                                 raise CorruptedMapFileError("Unknown symbol in map layout.")
                                             x += 1
@@ -150,7 +167,7 @@ class Gameboard:
             
             mapData.close()
             
-            self.sortEnemyPath(self._enemyPath)
+            self.sortEnemyPath(self._enemyPath, self._pathStart)
             
             return -1
         
@@ -158,12 +175,11 @@ class Gameboard:
             raise CorruptedMapFileError("Reading the map data failed.")
         
     
-    def sortEnemyPath(self, path):
-        # First we look for the first coordinate. For this sorting algorithm to work the path has to start from left edge of the map.
-        # Another option would be to give in the map file the coordinates for the starting location. I could implement that later, if I have time.
+    def sortEnemyPath(self, path, startcoordinate):
+        # First we search for the path start coordinate and place it first in the list.
         i = 0
         while i < len(path):
-            if path[i][0] == 0:
+            if path[i] == self._pathStart:
                 temp = path[0]
                 path[0] = path[i]
                 path[i] = temp
@@ -305,6 +321,14 @@ class Gameboard:
        
     def getWaves(self):
         return self._waves 
+    
+    
+    def getCave(self):
+        return self._cave
+    
+    
+    def getMountain(self):
+        return self._mountain
         
     
     def removeFromUnoccupied(self, coordinates):
@@ -322,6 +346,7 @@ class Gameboard:
               +"Towers" + str(self._towersAvailable) + "\n"
               +"Enemy path " + str(self._enemyPath) + "\n"
               +"River " + str(self._river) + "\n"
+              +"Cave " + str(self._cave) + "\n"
               +"Occupied " + str(self._occupied) + "\n"
               +"Unoccupied " + str(self._unoccupied))
     
@@ -342,6 +367,9 @@ class Gameboard:
     road = property(getRoad)
     unoccupied = property(getUnoccupied)
     enemiesSummoned = property(getEnemiesSummoned)
+    cave = property(getCave)
+    mountain = property(getMountain)
+    
     
 '''   
 def main():

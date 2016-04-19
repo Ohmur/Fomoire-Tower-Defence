@@ -49,7 +49,7 @@ class GameStats(QFrame):
             heartLabel = QLabel(self)
             heartLabel.setPixmap(heart)
             self.hearts.append([True, heartLabel])
-            heartLabel.move((gameboard.width - 1)*blockSize - (2 + i * 10), 18)
+            heartLabel.move((gameboard.width - 1)*blockSize - (2 + i * 12), 18)
             heartLabel.show()
             i += 1
         
