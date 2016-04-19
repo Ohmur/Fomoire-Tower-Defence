@@ -149,6 +149,23 @@ class UserInterface(QMainWindow):
         self.timer.stop()
         self.statusBar().showMessage('Game has ended. You won.')
         self._gameover = True
+        
+        self.popUp = QFrame()
+        self.popUp.setGeometry(500, 500, 100, 100)
+        
+        vbox = QVBoxLayout()
+        
+        youLost = QLabel()
+        youLost.setPixmap(QPixmap("victory.png"))
+        vbox.addWidget(youLost)
+        
+        doneButton = QPushButton("Done")
+        vbox.addWidget(doneButton)
+
+        self.popUp.setLayout(vbox)
+        self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 130, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
+        self.popUp.show()
+        doneButton.clicked.connect(self.popUp.deleteLater)
     
 
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
