@@ -30,6 +30,7 @@ class Gameboard:
         self._unoccupied = []
         self._cave = []
         self._mountain = []
+        self._bridge = []
         self._road = []
     
 
@@ -146,6 +147,14 @@ class Gameboard:
                                                 self._occupied.append([x, y])
                                                 self._road.append([x, y])
                                                 self._enemyPath.append([x, y])
+                                            elif symbol == "B": 
+                                                # path on a bridge
+                                                self._occupied.append([x, y])
+                                                self._bridge.append([x, y])
+                                                self._enemyPath.append([x, y])
+                                            elif symbol == "W":
+                                                self._occupied.append([x, y])
+                                                self._bridge.append([x, y])
                                             elif symbol == "C":
                                                 self._occupied.append([x, y])
                                                 self._cave.append([x, y])
@@ -329,6 +338,10 @@ class Gameboard:
     
     def getMountain(self):
         return self._mountain
+    
+    
+    def getBridge(self):
+        return self._bridge
         
     
     def removeFromUnoccupied(self, coordinates):
@@ -369,6 +382,7 @@ class Gameboard:
     enemiesSummoned = property(getEnemiesSummoned)
     cave = property(getCave)
     mountain = property(getMountain)
+    bridge = property(getBridge)
     
     
 '''   

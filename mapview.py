@@ -56,6 +56,8 @@ class MapView(QFrame):
         self.drawMapBlocks(qp, self.parent.gameboard.unoccupied, grassColor)
         self.drawMapBlocks(qp, self.parent.gameboard.cave, caveColor)
         self.drawMapBlocks(qp, self.parent.gameboard.mountain, mountainColor)
+        self.drawMapBlocks(qp, self.parent.gameboard.bridge, woodColor)
+        
             
     def drawMapBlocks(self, qp, coordinateList, color):
         # Draws map block according to the coordinate list
