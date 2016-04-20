@@ -310,7 +310,7 @@ class MapView(QFrame):
                 enemy = self.parent.gameboard.enemiesSummoned[i]
                 if not enemy.isFinished:
                     enemy.moveEnemy() #calculates the new posX and posY
-                    enemy.move(enemy.posX, enemy.posY)
+                    enemy.move(enemy.posX - enemy._picture.width() / 2, enemy.posY - enemy._picture.height() / 2)
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
                         self.parent.update()

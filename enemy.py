@@ -55,10 +55,10 @@ class Enemy(QAbstractButton):
                     self._position_x += x
                     self._direction = "R"
             elif self._direction == "U":
-                if (self._position_y - self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                if (self._position_y - self._speed) > (self._currentBlock[1] * blockSize + blockSize / 2):
                     self._position_y -= self._speed
                 else:
-                    x = (self._position_y - self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    x = (self._currentBlock[1] * blockSize + blockSize / 2) % (self._position_y - self._speed)
                     y = self._speed - x
                     self._position_y -= y
                     self._position_x += x
@@ -77,10 +77,10 @@ class Enemy(QAbstractButton):
                     self._position_x -= x
                     self._direction = "L"
             elif self._direction == "U":
-                if (self._position_y - self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                if (self._position_y - self._speed) > (self._currentBlock[1] * blockSize + blockSize / 2):
                     self._position_y -= self._speed
                 else:
-                    x = (self._position_y - self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    x = (self._currentBlock[1] * blockSize + blockSize / 2) % (self._position_y - self._speed)
                     y = self._speed - x
                     self._position_y -= y
                     self._position_x -= x
@@ -99,10 +99,10 @@ class Enemy(QAbstractButton):
                     self._position_x += x
                     self._direction = "D" 
             elif self._direction == "L":
-                if (self._position_x - self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                if (self._position_x - self._speed) > (self._currentBlock[0] * blockSize + blockSize / 2):
                     self._position_x -= self._speed
                 else:
-                    y = (self._position_x - self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    y = (self._currentBlock[0] * blockSize + blockSize / 2) % (self._position_x - self._speed) 
                     x = self._speed - y
                     self._position_y += y
                     self._position_x -= x
@@ -121,23 +121,23 @@ class Enemy(QAbstractButton):
                     self._position_x += x
                     self._direction = "U" 
             elif self._direction == "L":
-                if (self._position_x - self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                if (self._position_x - self._speed) > (self._currentBlock[0] * blockSize + blockSize / 2):
                     self._position_x -= self._speed
                 else:
-                    y = (self._position_x - self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    y = (self._currentBlock[0] * blockSize + blockSize / 2) % (self._position_x - self._speed)
                     x = self._speed - y
                     self._position_y -= y
                     self._position_x -= x
                     self._direction = "U" 
         
         # Then we check if they've moved to another block
-        if floor((self._position_x + blockSize / 2) / blockSize) != self._currentBlock[0]:
+        if floor(self._position_x / blockSize) != self._currentBlock[0]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
             if self._blocksMoved < len(self._path) - 1:
                 self._nextBlock = self._path[self._blocksMoved + 1]    
                 
-        elif floor((self._position_y + blockSize / 2) / blockSize) != self._currentBlock[1]:
+        elif floor(self._position_y / blockSize) != self._currentBlock[1]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
             if self._blocksMoved < len(self._path) - 1:
@@ -247,15 +247,16 @@ class Barbarian(Enemy):
         self._isFinished = False
         self._picture = QPixmap("barbaari.png")
         
-        self._position_x = self._path[0][0] * blockSize
-        self._position_y = self._path[0][1] * blockSize
+        self._position_x = self._path[0][0] * blockSize + blockSize / 2
+        self._position_y = self._path[0][1] * blockSize + blockSize / 2
         
+        '''
         if self._path[0][0] == self._path[1][0]:
             self._position_x -= blockSize / 2
         
         if self._path[0][1] == self._path[1][1]:
             self._position_y -= blockSize / 2
-        
+        '''
         
 class Berserker(Enemy):
     
@@ -267,12 +268,13 @@ class Berserker(Enemy):
         self._isFinished = False
         self._picture = QPixmap("berserker.png")
         
-        self._position_x = self._path[0][0] * blockSize
-        self._position_y = self._path[0][1] * blockSize
+        self._position_x = self._path[0][0] * blockSize + blockSize / 2
+        self._position_y = self._path[0][1] * blockSize + blockSize / 2
         
+        '''
         if self._path[0][0] == self._path[1][0]:
-            self._position_x -= blockSize / 2
+            self._position_x += blockSize / 2
         
         if self._path[0][1] == self._path[1][1]:
-            self._position_y -= blockSize / 2
-        
+            self._position_y += blockSize / 2
+        '''

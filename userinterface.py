@@ -33,7 +33,7 @@ class UserInterface(QMainWindow):
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData("Map1.txt")
+        self._gameboard.readMapData("Map3.txt")
         self.initUI()
         self.timer.start(gameSpeed, self)
         
