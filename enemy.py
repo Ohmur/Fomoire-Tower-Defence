@@ -7,6 +7,7 @@ Created on 24.3.2016
 from PyQt5.QtWidgets import QAbstractButton
 from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPixmap
+from globals import blockSize
 from math import floor 
 
 
@@ -19,36 +20,124 @@ class Enemy(QAbstractButton):
         self._size = 2
         self._isFinished = False
         self._isDead = False
-
-        self._position_x = self._path[0][0]*20
-        self._position_y = self._path[0][1]*20
         
         self._blocksMoved = 0
         self._currentBlock = self._path[0]
         self._nextBlock = self._path[1]
         
+        self._direction = None
+        
+        if self._currentBlock[0] < self._nextBlock[0]:
+            self._direction = "R"
+        elif self._currentBlock[0] > self._nextBlock[0]:
+            self._direction = "L"
+        elif self._currentBlock[1] < self._nextBlock[1]:
+            self._direction = "D"
+        elif self._currentBlock[1] > self._nextBlock[1]:
+            self._direction = "U"    
+            
         self.pressed.connect(self.click)
     
     
     def moveEnemy(self):
-        # First we check which way the enemy needs to move and move them
+        # First we check which way the enemy needs to move and how much and move them
+        
         if self._currentBlock[0] < self._nextBlock[0]:
-            self._position_x += self._speed
+            if self._direction == "R":
+                self._position_x += self._speed
+            elif self._direction == "D":
+                if (self._position_y + self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                    self._position_y += self._speed
+                else:
+                    x = (self._position_y + self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    y = self._speed - x
+                    self._position_y += y
+                    self._position_x += x
+                    self._direction = "R"
+            elif self._direction == "U":
+                if (self._position_y - self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                    self._position_y -= self._speed
+                else:
+                    x = (self._position_y - self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    y = self._speed - x
+                    self._position_y -= y
+                    self._position_x += x
+                    self._direction = "R"
+                
         elif self._currentBlock[0] > self._nextBlock[0]:
-            self._position_x -= self._speed
+            if self._direction == "L":
+                self._position_x -= self._speed
+            elif self._direction == "D":
+                if (self._position_y + self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                    self._position_y += self._speed
+                else:
+                    x = (self._position_y + self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    y = self._speed - x
+                    self._position_y += y
+                    self._position_x -= x
+                    self._direction = "L"
+            elif self._direction == "U":
+                if (self._position_y - self._speed) < (self._currentBlock[1] * blockSize + blockSize / 2):
+                    self._position_y -= self._speed
+                else:
+                    x = (self._position_y - self._speed) % (self._currentBlock[1] * blockSize + blockSize / 2)    
+                    y = self._speed - x
+                    self._position_y -= y
+                    self._position_x -= x
+                    self._direction = "L"    
+                
         elif self._currentBlock[1] < self._nextBlock[1]:
-            self._position_y += self._speed
+            if self._direction == "D":
+                self._position_y += self._speed
+            elif self._direction == "R":
+                if (self._position_x + self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                    self._position_x += self._speed
+                else:
+                    y = (self._position_x + self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    x = self._speed - y
+                    self._position_y += y
+                    self._position_x += x
+                    self._direction = "D" 
+            elif self._direction == "L":
+                if (self._position_x - self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                    self._position_x -= self._speed
+                else:
+                    y = (self._position_x - self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    x = self._speed - y
+                    self._position_y += y
+                    self._position_x -= x
+                    self._direction = "D" 
+                          
         elif self._currentBlock[1] > self._nextBlock[1]:
-            self._position_y -= self._speed
+            if self._direction == "U":
+                self._position_y -= self._speed
+            elif self._direction == "R":
+                if (self._position_x + self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                    self._position_x += self._speed
+                else:
+                    y = (self._position_x + self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    x = self._speed - y
+                    self._position_y -= y
+                    self._position_x += x
+                    self._direction = "U" 
+            elif self._direction == "L":
+                if (self._position_x - self._speed) < (self._currentBlock[0] * blockSize + blockSize / 2):
+                    self._position_x -= self._speed
+                else:
+                    y = (self._position_x - self._speed) % (self._currentBlock[0] * blockSize + blockSize / 2)    
+                    x = self._speed - y
+                    self._position_y -= y
+                    self._position_x -= x
+                    self._direction = "U" 
         
         # Then we check if they've moved to another block
-        if floor(self._position_x / 20) != self._currentBlock[0]:
+        if floor((self._position_x + blockSize / 2) / blockSize) != self._currentBlock[0]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
             if self._blocksMoved < len(self._path) - 1:
                 self._nextBlock = self._path[self._blocksMoved + 1]    
                 
-        elif floor(self._position_y / 20) != self._currentBlock[1]:
+        elif floor((self._position_y + blockSize / 2) / blockSize) != self._currentBlock[1]:
             self._blocksMoved += 1
             self._currentBlock = self._path[self._blocksMoved]
             if self._blocksMoved < len(self._path) - 1:
@@ -58,6 +147,7 @@ class Enemy(QAbstractButton):
     def checkIfFinished(self):
         if self._blocksMoved == len(self._path) - 1:
             self.setIsFinished(True)
+            self.hide()
             return True
         else:
             return False
@@ -157,6 +247,15 @@ class Barbarian(Enemy):
         self._isFinished = False
         self._picture = QPixmap("barbaari.png")
         
+        self._position_x = self._path[0][0] * blockSize
+        self._position_y = self._path[0][1] * blockSize
+        
+        if self._path[0][0] == self._path[1][0]:
+            self._position_x -= blockSize / 2
+        
+        if self._path[0][1] == self._path[1][1]:
+            self._position_y -= blockSize / 2
+        
         
 class Berserker(Enemy):
     
@@ -167,3 +266,13 @@ class Berserker(Enemy):
         self._speed = 4
         self._isFinished = False
         self._picture = QPixmap("berserker.png")
+        
+        self._position_x = self._path[0][0] * blockSize
+        self._position_y = self._path[0][1] * blockSize
+        
+        if self._path[0][0] == self._path[1][0]:
+            self._position_x -= blockSize / 2
+        
+        if self._path[0][1] == self._path[1][1]:
+            self._position_y -= blockSize / 2
+        
