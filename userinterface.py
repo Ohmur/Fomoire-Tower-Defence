@@ -105,6 +105,8 @@ class UserInterface(QMainWindow):
         self._timePassed += 1
         self.mapView.summonEnemy()
         self.mapView.moveEnemies()
+        self.mapView.checkShooting()
+        self.mapView.moveProjectiles()
        
                     
     def checkIsWaveDone(self):

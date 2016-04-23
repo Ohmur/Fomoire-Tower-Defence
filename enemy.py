@@ -5,8 +5,8 @@ Created on 24.3.2016
 '''
 
 from PyQt5.QtWidgets import QAbstractButton
-from PyQt5.QtGui import QPainter
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtCore import QPoint
 from globals import blockSize
 from math import floor 
 
@@ -196,6 +196,10 @@ class Enemy(QAbstractButton):
         return self._position_y
     
     
+    def getCenter(self):
+        return QPoint(self._position_x, self._position_y)
+    
+    
     def getDirection(self):
         return self._direction
     
@@ -214,6 +218,10 @@ class Enemy(QAbstractButton):
     
     def setCurrentBlock(self, coordinates):
         self._currentBlock = coordinates
+        
+    
+    def getBlocksMoved(self):
+        return self._blocksMoved
 
 
     def getSpeed(self):
@@ -222,6 +230,22 @@ class Enemy(QAbstractButton):
     
     def getHealth(self):
         return self._health
+    
+    
+    def getHit(self, damage):
+        self._health -= damage
+        
+    
+    def checkIfDead(self):
+        if self._health <= 0:
+            self._isDead = True
+            return True
+        else:
+            return False
+        
+        
+    def getReward(self):
+        return self._reward
 
 
     path = property(getPath)
@@ -235,6 +259,9 @@ class Enemy(QAbstractButton):
     speed = property(getSpeed)
     health = property(getHealth)
     name = property(getName)
+    blocksMoved = property(getBlocksMoved)
+    getCenter = property(getCenter)
+    reward = property(getReward)
 
 
 class Barbarian(Enemy):
@@ -246,6 +273,7 @@ class Barbarian(Enemy):
         self._speed = 3
         self._isFinished = False
         self._picture = QPixmap("barbaari.png")
+        self._reward = 20
         
         self._position_x = self._path[0][0] * blockSize + blockSize / 2
         self._position_y = self._path[0][1] * blockSize + blockSize / 2
@@ -267,6 +295,7 @@ class Berserker(Enemy):
         self._speed = 4
         self._isFinished = False
         self._picture = QPixmap("berserker.png")
+        self._reward = 30
         
         self._position_x = self._path[0][0] * blockSize + blockSize / 2
         self._position_y = self._path[0][1] * blockSize + blockSize / 2

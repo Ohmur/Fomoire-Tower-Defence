@@ -37,14 +37,13 @@ class MapView(QFrame):
         qp.begin(self)
         self.drawMap(qp)
         
-        if not self.parent.isTowerSelected and self.parent.isTowerHovered:
-            # Draws tower range when a tower is being hovered
-            self.drawTowerRange(self.parent.towerBeingHovered.posX, self.parent.towerBeingHovered.posY, self.parent.towerBeingHovered.range, qp)
-        
         if self.underMouse() and self.parent.isTowerSelected:
-            # Draws tower outline and range when a tower is being bought
             self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
+        
+        if not self.parent.isTowerSelected and self.parent.isTowerHovered:
+            # Draws tower range when a tower is being hovered
+            self.drawTowerRange(self.parent.towerBeingHovered.posX, self.parent.towerBeingHovered.posY, self.parent.towerBeingHovered.range, qp)    
         
         qp.end()
         
@@ -140,8 +139,8 @@ class MapView(QFrame):
         # This method makes sure that the tower outline and range follow the mouse
         if self.underMouse() and self.parent.isTowerSelected == True:
             self.mouse_x, self.mouse_y = self.calculateClosestCorner(event.pos().x(), event.pos().y())
-            self.update()
-            
+    
+     
     
     def calculateClosestCorner(self, mouse_x, mouse_y):
         # Calculates the closest grid corner from mouse location      
@@ -159,8 +158,9 @@ class MapView(QFrame):
             closest_corner_y = mouse_y + (20 - mouse_y % 20)
             
         return closest_corner_x, closest_corner_y
-        
-        
+
+    
+       
     def drawTowerRange(self, x, y, towerRange, painter):
         
         painter.setPen(rangePenColor)
@@ -308,7 +308,7 @@ class MapView(QFrame):
             i = 0
             while i < noOfSummonedEnemies:
                 enemy = self.parent.gameboard.enemiesSummoned[i]
-                if not enemy.isFinished:
+                if not enemy.isFinished and not enemy.isDead:
                     enemy.moveEnemy() #calculates the new posX and posY
                     enemy.move(enemy.posX - enemy._picture.width() / 2, enemy.posY - enemy._picture.height() / 2)
                     if enemy.checkIfFinished():
@@ -319,7 +319,20 @@ class MapView(QFrame):
                 i += 1        
                  
         self.update()
+    
+    
+    def moveProjectiles(self):
         
+        for projectile in self.parent.gameboard.projectiles:
+            if not projectile.isFinished:
+                projectile.move
+                if projectile.checkIfHit():
+                    self.statusBarMessage(projectile.destination.name + " takes a hit.")
+                    if projectile.destination.checkIfDead():
+                        projectile.destination.isDead = True
+                        projectile.destination.hide()
+                        self.parent.gameboard.addMoney(projectile.destination.reward)
+                
     
     def enemyClick(self, enemy):
         #Opens an info screen on the enemy.
@@ -363,3 +376,23 @@ class MapView(QFrame):
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
+        
+        
+    def checkShooting(self):
+        
+        for tower in self.parent.gameboard.towersBuild:
+            i = 0
+            maxBlocks = -1
+            targetEnemy = None
+            while i < len(self.parent.gameboard.enemiesSummoned):
+                enemy = self.parent.gameboard.enemiesSummoned[i]
+                
+                if tower.inRange(enemy):
+                    if enemy.blocksMoved > maxBlocks:
+                        targetEnemy = enemy
+            
+                i += 1
+            
+            if targetEnemy != None:
+                self.parent.gameboard.addProjectile(tower.shoot(enemy))  
+                # self.statusBarMessage(str(tower.name) + " shoots!")

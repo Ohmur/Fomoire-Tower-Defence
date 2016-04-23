@@ -7,16 +7,13 @@ Created on 6.3.2016
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPixmap
 from math import sqrt
+from projectile import *
 
 class Tower(object):
     
     def __init__(self):
         self._position_x = 0
         self._position_y = 0
-
-    
-    def getCenter(self):
-        return QPoint(self._position_x, self._position_y)
     
     
     def getRange(self):
@@ -24,7 +21,7 @@ class Tower(object):
     
     
     def inRange(self, enemy):
-        return int(sqrt(pow((self.getCenter().x() - enemy.getCenter().x()), 2) + pow((self.getCenter().y() - enemy.getCenter().y()), 2) )) <= self.shotrange
+        return int(sqrt(pow((self._position_x - enemy.posX), 2) + pow((self._position_y - enemy.posY), 2) )) <= self._range
     
     
     def getPrice(self):
@@ -88,7 +85,6 @@ class Tower(object):
     upgradedPicture = property(getUpgradedPicture)
     posX = property(getPositionX)
     posY = property(getPositionY)
-    center = property(getCenter)
     
 
 class Musketeer(Tower):
@@ -114,6 +110,10 @@ class Musketeer(Tower):
         self._fireRate -= 1
         self._level += 1
         
+    
+    def shoot(self, enemy):
+        return Bullet(self, enemy)
+        
 
 class Cannon(Tower):
     
@@ -131,8 +131,13 @@ class Cannon(Tower):
         self._picture = QPixmap("cannon.png")
         self._upgradedPicture = QPixmap("cannon_upgraded.png")
         
+        
     def upgrade(self):
         self._power += self._power / 2
         self._range += self._range / 4
         self._fireRate -= 1
         self._level += 1
+        
+        
+    def shoot(self, enemy):
+        return Cannonball(self, enemy)

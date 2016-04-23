@@ -25,6 +25,7 @@ class Gameboard:
         self._pathStart = []
         self._enemyPath = []
         self._enemiesSummoned = []
+        self._projectiles = []
         self._river = []
         self._occupied = []
         self._unoccupied = []
@@ -346,6 +347,18 @@ class Gameboard:
     
     def removeFromUnoccupied(self, coordinates):
         self._unoccupied.remove(coordinates)
+        
+        
+    def addProjectile(self, projectile):
+        self._projectiles.append(projectile)
+        
+    
+    def getProjectiles(self):
+        return self._projectiles
+    
+    
+    def addMoney(self, amount):
+        self._money += amount
 
         
     def printMapInfo(self):
@@ -383,6 +396,8 @@ class Gameboard:
     cave = property(getCave)
     mountain = property(getMountain)
     bridge = property(getBridge)
+    towersBuild = property(getBuildTowers)
+    projectiles = property(getProjectiles)
     
     
 '''   
