@@ -1,0 +1,44 @@
+#mapinfo
+name: Battle of Mag Tuireadh
+size: 25x50
+lives: 10
+money: 1000
+towers: t1, t2
+path start: 9, 5
+
+#waves 
+number of waves: 6
+100, e1, e1, e1, e2
+90, e1, e1, e2, e1, e1, e2
+60, e1, e2, e2, e1, e1, e1, e2, e2
+70, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
+20, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+40, e1, e1, e1, e2, e1, e2, e2, e2, e2
+
+
+#map
+MMMMMMMMMM+RRRRR+++++++++++RRR++++++++++++++++++++
+MMMMMMMMMM++RRRR++++++++++RRR+++++++++++++++++++++
+MMMMMCCCMMM++RRRR++++++++RRR+++M+M+M+++++++M+M+M++
+MMMMCCCCCMMM++++RRRR++++RRR++++MMMMM+++++++MMMMM++
+MMMMCCCCCMMM++++++RRRRRRRR++++++MMM+++++++++MMM+++
++++++0P0+++++++++++++RRRRR++++++MMM+M+M+M+M+MMM+++
++++++0P0++++++++++++++RRRR++++++MMMMMMMMMMMMMMM+++
++++++0P0+++++++++++++++RRR++++RRMMMMMCCCMMMMMMMRR+
++++++0P0++++++++++++++RRR++++RRRMMMMMCCCMMMMMMMRRR
++++++0P0++++MM+++++++RRR++++++RRRRRRRWBWRRRRRRRRR+
++++++0P0+++MMMM+++++RRR++++++++++++++WBW++++++++++
++++++0P0++++++++++++RRR++++++++++++++0P000000+++++
++++++0P000000+++++++RRR++++++++++++++0PPPPPP0+++++
++++++0PPPPPP0+++++++RRR++++++++++++++000000P0+++++
++++++000000P0++++++++RRR++++++++++++++++++0P0+++++
+++++++++++0P0++++++++RRR++++++++++++++++++0P0+++++
+++++++++++0P00000000WWWW0000000000000000000P0+++++
+++++++++++0PPPPPPPPPBBBBPPPPPPPPPPPPPPPPPPPP0+++++
+++++++++++00000000WWWW00000000000000000000000+++++
+++++++++++++++++++RRR+++++++++++++++++++++++++++++
++++++++++++++++++RRR+++++++++++++++++RRRR+++++++++
+++++++++++++++++RRR++++++++++++++++RRRRRRRR+++++++
++++++++++++++++RRR+++++++MM++++++++++RRRRRRR++++++
+++++++++++++++RRR++++++++++++++++++++++RRR++++++++
+++++++++++++++RRR+++++++++++++++++++++++++++++++++

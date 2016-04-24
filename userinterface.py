@@ -33,7 +33,7 @@ class UserInterface(QMainWindow):
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData("Map3.txt")
+        self._gameboard.readMapData("Map4.txt")
         self.initUI()
         self.timer.start(gameSpeed, self)
         
@@ -107,6 +107,7 @@ class UserInterface(QMainWindow):
         self.mapView.moveEnemies()
         self.mapView.checkShooting()
         self.mapView.moveProjectiles()
+        self.mapView.update()
        
                     
     def checkIsWaveDone(self):
@@ -116,6 +117,7 @@ class UserInterface(QMainWindow):
         if self._gameboard.currentEnemy > len(self._gameboard.waves[waveIndex][1]):
             self._gameboard.currentEnemy = 1
             self._gameboard.currentWave += 1
+            
             self.gamestats.update()
             return True
         else:

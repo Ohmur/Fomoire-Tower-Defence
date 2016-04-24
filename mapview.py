@@ -45,6 +45,8 @@ class MapView(QFrame):
             # Draws tower range when a tower is being hovered
             self.drawTowerRange(self.parent.towerBeingHovered.posX, self.parent.towerBeingHovered.posY, self.parent.towerBeingHovered.range, qp)    
         
+        self.drawPorjectiles(qp)
+        
         qp.end()
         
         
@@ -66,6 +68,20 @@ class MapView(QFrame):
         for i in coordinateList:
             qp.drawRect(i[0]*blockSize, i[1]*blockSize, blockSize, blockSize)
     
+    
+    def drawPorjectiles(self, qp):
+        
+        qp.setPen(projectileColor)
+        qp.setBrush(projectileColor)
+        
+        for projectile in self.parent.gameboard.projectiles:
+            
+            if not projectile.isFinished:
+                if projectile.name == "Bullet":
+                    qp.drawEllipse(projectile.posX, projectile.posY, 4, 4)
+                elif projectile.name == "Cannonball":
+                    qp.drawEllipse(projectile.posX, projectile.posY, 8, 8)
+                
  
     def mousePressEvent(self, e):
         # Method for building towers and checking that their location is ok
@@ -315,23 +331,10 @@ class MapView(QFrame):
                         self.parent.gameboard.currentLives -= 1
                         self.parent.update()
                         if self.parent.gameboard.currentLives <= 0:
-                            self.parent.loseGame()      
+                            self.parent.loseGame()
+                        else:
+                            self.checkIfGameEnded()    
                 i += 1        
-                 
-        self.update()
-    
-    
-    def moveProjectiles(self):
-        
-        for projectile in self.parent.gameboard.projectiles:
-            if not projectile.isFinished:
-                projectile.move
-                if projectile.checkIfHit():
-                    self.statusBarMessage(projectile.destination.name + " takes a hit.")
-                    if projectile.destination.checkIfDead():
-                        projectile.destination.isDead = True
-                        projectile.destination.hide()
-                        self.parent.gameboard.addMoney(projectile.destination.reward)
                 
     
     def enemyClick(self, enemy):
@@ -351,6 +354,7 @@ class MapView(QFrame):
                 enemyStats = QLabel("Enemy Stats", self)
                 name = QLabel("Name: " + str(enemy.name), self)
                 speed = QLabel("Speed: " + str(enemy.speed), self)
+                health = QLabel("Health " + str(enemy.health), self)
                 pixmap = QLabel()
                 pixmap.setPixmap(enemy.picture)
             
@@ -358,6 +362,7 @@ class MapView(QFrame):
                 vbox.addWidget(enemyStats)
                 vbox.addWidget(name)
                 vbox.addWidget(speed)
+                vbox.addWidget(health)
     
                 grid.addLayout(vbox, 0, 0)
             
@@ -381,18 +386,66 @@ class MapView(QFrame):
     def checkShooting(self):
         
         for tower in self.parent.gameboard.towersBuild:
-            i = 0
-            maxBlocks = -1
-            targetEnemy = None
-            while i < len(self.parent.gameboard.enemiesSummoned):
-                enemy = self.parent.gameboard.enemiesSummoned[i]
+            
+            if self.parent.timePassed % tower.fireRate == 0:
+                i = 0
+                maxBlocks = -1
+                targetEnemy = None
                 
-                if tower.inRange(enemy):
-                    if enemy.blocksMoved > maxBlocks:
-                        targetEnemy = enemy
+                while i < len(self.parent.gameboard.enemiesSummoned):
+                    
+                    enemy = self.parent.gameboard.enemiesSummoned[i]
+                    
+                    if enemy.isFinished == False and enemy.isDead == False:
+                        if tower.inRange(enemy):
+                            if enemy.blocksMoved > maxBlocks:
+                                maxBlocks = enemy.blocksMoved
+                                targetEnemy = enemy
+                    
+                    i += 1
+                
+                if targetEnemy != None:
+                    projectile = tower.shoot(targetEnemy)
+                    self.parent.gameboard.addProjectile(projectile)  
+                    # self.statusBarMessage(tower.name + " shoots " + targetEnemy.name + " with " + projectile.name)
+                
+    
+    def moveProjectiles(self):
+        
+        for projectile in self.parent.gameboard.projectiles:
             
-                i += 1
+            if not projectile.isFinished:
+                projectile.move()
+                # self.update()
+                
+                if projectile.checkIfHit():
+                    # self.statusBarMessage(projectile.destination.name + " takes a hit of " + str(projectile.damage) + " damage.")
+                    
+                    if projectile.destination.checkIfDead():
+                        self.statusBarMessage(projectile.destination.name + " is dead. You get " + str(projectile.destination.reward) + "coins.")
+                        self.parent.gameboard.addMoney(projectile.destination.reward)
+                        self.parent.gamestats.update()
+
+                        self.checkIfGameEnded()
+    
+    
+    def checkIfGameEnded(self):
+        
+        allDone = False
+        
+        if self.parent.gameboard.currentWave >= len(self.parent.gameboard.waves):
+            self.statusBarMessage("Last wave!")
             
-            if targetEnemy != None:
-                self.parent.gameboard.addProjectile(tower.shoot(enemy))  
-                # self.statusBarMessage(str(tower.name) + " shoots!")
+            totalEnemies = 0
+            for wave in self.parent.gameboard.waves:
+                totalEnemies += len(wave[1])
+            
+            if len(self.parent.gameboard.enemiesSummoned) == totalEnemies:
+                self.statusBarMessage("All enemies summoned!")
+                allDone = True
+                for enemy in self.parent.gameboard.enemiesSummoned:
+                    if enemy.isFinished == False and enemy.isDead == False:
+                        allDone = False
+                        
+        if allDone:
+            self.parent.winGame()

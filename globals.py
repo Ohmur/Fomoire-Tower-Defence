@@ -17,5 +17,7 @@ woodColor = QColor(129, 102, 26, 255)
 rangePenColor = QColor(25, 81, 0, 150)
 rangeBrushColor = QColor(11, 118, 108, 140)
 towerButtonSize = 40
+projectileColor = QColor(90, 90, 90, 255)
 
-gameSpeed = 10
+
+gameSpeed = 30

@@ -93,10 +93,10 @@ class Musketeer(Tower):
         super().__init__()
         self._name = "Musketeer"
         self._range = 65
-        self._fireRate = 2
+        self._fireRate = 15
         self._price = 100
         self._upgradePrice = 120
-        self._power = 40
+        self._power = 10
         self._size = 2
         self._level = 1
         self._maxLevel = 2
@@ -121,10 +121,10 @@ class Cannon(Tower):
         super().__init__()
         self._name = "Cannon"
         self._range = 100
-        self._fireRate = 3
+        self._fireRate = 25
         self._price = 150
         self._upgradePrice = 180
-        self._power = 80
+        self._power = 20
         self._size = 2
         self._level = 1
         self._maxLevel = 2

@@ -239,6 +239,7 @@ class Enemy(QAbstractButton):
     def checkIfDead(self):
         if self._health <= 0:
             self._isDead = True
+            self._picture = self._deadPicture
             return True
         else:
             return False
@@ -274,6 +275,7 @@ class Barbarian(Enemy):
         self._isFinished = False
         self._picture = QPixmap("barbaari.png")
         self._reward = 20
+        self._deadPicture = QPixmap("blood.png")
         
         self._position_x = self._path[0][0] * blockSize + blockSize / 2
         self._position_y = self._path[0][1] * blockSize + blockSize / 2
@@ -295,6 +297,7 @@ class Berserker(Enemy):
         self._speed = 4
         self._isFinished = False
         self._picture = QPixmap("berserker.png")
+        self._deadPicture = QPixmap("blood2.png")
         self._reward = 30
         
         self._position_x = self._path[0][0] * blockSize + blockSize / 2
