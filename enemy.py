@@ -3,7 +3,7 @@ Created on 24.3.2016
 
 @author: Rohmu
 '''
-
+import os.path
 from PyQt5.QtWidgets import QAbstractButton
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtCore import QPoint
@@ -277,9 +277,9 @@ class Barbarian(Enemy):
         self._health = 100
         self._speed = 3
         self._isFinished = False
-        self._picture = QPixmap("barbaari.png")
+        self._picture = QPixmap(os.path.join('./Pictures/', "barbaari.png"))
         self._reward = 20
-        self._deadPicture = QPixmap("blood.png")
+        self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood.png"))
            
         
 class Berserker(Enemy):
@@ -290,8 +290,8 @@ class Berserker(Enemy):
         self._health = 80
         self._speed = 4
         self._isFinished = False
-        self._picture = QPixmap("berserker.png")
-        self._deadPicture = QPixmap("blood2.png")
+        self._picture = QPixmap(os.path.join('./Pictures/', "berserker.png"))
+        self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood2.png"))
         self._reward = 30
         
         
