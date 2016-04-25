@@ -39,12 +39,12 @@ class UserInterface(QMainWindow):
         
 
     def initUI(self):
-
+        
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
         self.setWindowTitle(self._gameboard.name)
-        self.setWindowIcon(QIcon('berserker_icon.png')) #Apparently this doens't work the same way on mac.
-        self.statusBar().showMessage('Ready')
+        self.setWindowIcon(QIcon('berserker_icon.png')) #Apparently this doens't work the same way on a mac.
+        self.statusBar().showMessage('Ready!')
         vbox = QVBoxLayout()
         centralWidget.setLayout(vbox)
         self.gameStats = GameStats(self)
@@ -102,6 +102,7 @@ class UserInterface(QMainWindow):
     
     
     def timerEvent(self, event):
+        # The time passed attribute helps with setting the enemy appearance interval and tower firerate.
         self._timePassed += 1
         self.mapView.summonEnemy()
         self.mapView.moveEnemies()
@@ -117,7 +118,6 @@ class UserInterface(QMainWindow):
         if self._gameboard.currentEnemy > len(self._gameboard.waves[waveIndex][1]):
             self._gameboard.currentEnemy = 1
             self._gameboard.currentWave += 1
-            
             self.gamestats.update()
             return True
         else:

@@ -25,6 +25,11 @@ class Enemy(QAbstractButton):
         self._currentBlock = self._path[0]
         self._nextBlock = self._path[1]
         
+        # We want the enemy to be in the middle of the current block
+        self._position_x = self._path[0][0] * blockSize + blockSize / 2
+        self._position_y = self._path[0][1] * blockSize + blockSize / 2
+        
+        # We need to know which way the enemy is moving in order to keep them in the middle of the path at all times
         self._direction = None
         
         if self._currentBlock[0] < self._nextBlock[0]:
@@ -41,7 +46,6 @@ class Enemy(QAbstractButton):
     
     def moveEnemy(self):
         # First we check which way the enemy needs to move and how much and move them
-        
         if self._currentBlock[0] < self._nextBlock[0]:
             if self._direction == "R":
                 self._position_x += self._speed
@@ -276,17 +280,7 @@ class Barbarian(Enemy):
         self._picture = QPixmap("barbaari.png")
         self._reward = 20
         self._deadPicture = QPixmap("blood.png")
-        
-        self._position_x = self._path[0][0] * blockSize + blockSize / 2
-        self._position_y = self._path[0][1] * blockSize + blockSize / 2
-        
-        '''
-        if self._path[0][0] == self._path[1][0]:
-            self._position_x -= blockSize / 2
-        
-        if self._path[0][1] == self._path[1][1]:
-            self._position_y -= blockSize / 2
-        '''
+           
         
 class Berserker(Enemy):
     
@@ -300,13 +294,4 @@ class Berserker(Enemy):
         self._deadPicture = QPixmap("blood2.png")
         self._reward = 30
         
-        self._position_x = self._path[0][0] * blockSize + blockSize / 2
-        self._position_y = self._path[0][1] * blockSize + blockSize / 2
         
-        '''
-        if self._path[0][0] == self._path[1][0]:
-            self._position_x += blockSize / 2
-        
-        if self._path[0][1] == self._path[1][1]:
-            self._position_y += blockSize / 2
-        '''

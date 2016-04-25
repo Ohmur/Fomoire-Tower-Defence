@@ -38,6 +38,7 @@ class MapView(QFrame):
         self.drawMap(qp)
         
         if self.underMouse() and self.parent.isTowerSelected:
+            # Draws the tower outline and range of the tower being build
             self.drawTowerRange(self.mouse_x, self.mouse_y, self.parent.selectedTower.range, qp)
             self.drawTowerOutline(self.mouse_x, self.mouse_y, qp)
         
@@ -61,12 +62,25 @@ class MapView(QFrame):
         
             
     def drawMapBlocks(self, qp, coordinateList, color):
-        # Draws map block according to the coordinate list
+        # Draws map blocks according to the coordinate list
         qp.setPen(gridColor)
         qp.setBrush(color)
         
         for i in coordinateList:
             qp.drawRect(i[0]*blockSize, i[1]*blockSize, blockSize, blockSize)
+    
+    
+    def drawTowerRange(self, x, y, towerRange, painter):
+        
+        painter.setPen(rangePenColor)
+        painter.setBrush(rangeBrushColor)
+        painter.drawEllipse(QPoint(x, y), towerRange, towerRange)
+    
+    
+    def drawTowerOutline(self, x, y, painter):
+        painter.setPen(rangePenColor)
+        painter.setBrush(rangeBrushColor)
+        painter.drawRect(x - 20, y - 20, 40, 40)
     
     
     def drawPorjectiles(self, qp):
@@ -78,26 +92,44 @@ class MapView(QFrame):
             
             if not projectile.isFinished:
                 if projectile.name == "Bullet":
-                    qp.drawEllipse(projectile.posX, projectile.posY, 4, 4)
+                    qp.drawEllipse(projectile.posX, projectile.posY, 3, 3)
                 elif projectile.name == "Cannonball":
                     qp.drawEllipse(projectile.posX, projectile.posY, 8, 8)
-                
+    
+    
+    def mouseMoveEvent(self, event):
+        # This method makes sure that towers are build according to the grid and that the tower outline and range are displayed properly
+        if self.underMouse() and self.parent.isTowerSelected == True:
+            self.mouse_x, self.mouse_y = self.calculateClosestCorner(event.pos().x(), event.pos().y())  
+        
+        
+    def calculateClosestCorner(self, mouse_x, mouse_y):
+        # Calculates the closest grid corner from mouse location      
+        closest_corner_x = 0
+        closest_corner_y = 0      
+        
+        if mouse_x % 20 < 10:
+            closest_corner_x = mouse_x - (mouse_x % 20)
+        else:
+            closest_corner_x = mouse_x + (20 - mouse_x % 20)
+                        
+        if mouse_y % 20 < 10:
+            closest_corner_y = mouse_y - (mouse_y % 20)
+        else:
+            closest_corner_y = mouse_y + (20 - mouse_y % 20)
+            
+        return closest_corner_x, closest_corner_y
+
  
     def mousePressEvent(self, e):
         # Method for building towers and checking that their location is ok
         if e.button() == Qt.LeftButton:
             
             if self.parent.gameover == False:
+                
                 if self.parent.isTowerSelected == True:
-                    # First we check the mouse location
-                    self.mouse_x = e.pos().x()
-                    self.mouse_y = e.pos().y()
-                    
-                    # We calculate the closest grid corner to find the center of the tower
-                    closest_corner_x, closest_corner_y = self.calculateClosestCorner(self.mouse_x, self.mouse_y)
-                        
                     # We calculate the bottom right block for the tower
-                    block1 = [int(closest_corner_x / 20), int(closest_corner_y / 20)]
+                    block1 = [int(self.mouse_x / 20), int(self.mouse_y / 20)]
                     
                     # We need to make sure that the tower doesn't go over the borders of the gameboard
                     if block1[0] > 0 and block1[1] > 0 and block1[0] < self.parent.gameboard.width and block1[1] < self.parent.gameboard.height:
@@ -118,7 +150,7 @@ class MapView(QFrame):
                         if canPlaceTower == True:
                             # We places the tower on the map
                             tower = self.parent.selectedTower
-                            tower.setPosition(closest_corner_x, closest_corner_y)
+                            tower.setPosition(self.mouse_x, self.mouse_y)
                                 
                             placedTower = ClickableTower(tower, self)
                             placedTower.move(block3[0] * 20, block3[1] * 20)
@@ -137,12 +169,14 @@ class MapView(QFrame):
                             self.parent.isTowerSelected = False
                                 
                         else:
-                            self.statusBarMessage("Can't place it there")
+                            self.statusBarMessage("Can't place it there!")
                                 
                     else:
-                            self.statusBarMessage("Can't place it there")                      
+                            self.statusBarMessage("Can't place it there!")    
+                                              
             else:
                 self.statusBarMessage("The game has ended. You can't build towers.")    
+                
         else:
             # If we click the right mouse button we cancel the tower selection
             self.parent.selectedTower = None
@@ -151,61 +185,23 @@ class MapView(QFrame):
             self.update()
     
     
-    def mouseMoveEvent(self, event):
-        # This method makes sure that the tower outline and range follow the mouse
-        if self.underMouse() and self.parent.isTowerSelected == True:
-            self.mouse_x, self.mouse_y = self.calculateClosestCorner(event.pos().x(), event.pos().y())
-    
-     
-    
-    def calculateClosestCorner(self, mouse_x, mouse_y):
-        # Calculates the closest grid corner from mouse location      
-        closest_corner_x = 0
-        closest_corner_y = 0      
-        
-        if mouse_x % 20 < 10:
-            closest_corner_x = mouse_x - (mouse_x % 20)
-        else:
-            closest_corner_x = mouse_x + (20 - mouse_x % 20)
-                        
-        if mouse_y % 20 < 10:
-            closest_corner_y = mouse_y - (mouse_y % 20)
-        else:
-            closest_corner_y = mouse_y + (20 - mouse_y % 20)
-            
-        return closest_corner_x, closest_corner_y
-
-    
-       
-    def drawTowerRange(self, x, y, towerRange, painter):
-        
-        painter.setPen(rangePenColor)
-        painter.setBrush(rangeBrushColor)
-        painter.drawEllipse(QPoint(x, y), towerRange, towerRange)
-    
-    
-    def drawTowerOutline(self, x, y, painter):
-        painter.setPen(rangePenColor)
-        painter.setBrush(rangeBrushColor)
-        painter.drawRect(x - 20, y - 20, 40, 40)
-    
-    
     def getParent(self):
+        # Not sure if I'm using this anywhere
         return self.parent
     
         
     def statusBarMessage(self, message):
+        # Just a shorter way to write statusbar messages
         self.parent.statusBar().showMessage(message)
     
     
     def towerClick(self, tower):
-        #Should open a menu to upgrade tower, and to see it's stats somewhere.
-        
+        # Opens a popup to see tower stats and to upgrade tower
         if self.parent.gameover == False:
             
             if self.parent.isTowerSelected == False:
                 self.clickedTower = tower
-                self.statusBarMessage("Tower clicked")
+                # self.statusBarMessage("Tower clicked")
                 self.popUp = QFrame()
                 self.popUp.setGeometry(500, 500, 100, 100)
             
@@ -214,20 +210,19 @@ class MapView(QFrame):
                 
                 vbox = QVBoxLayout()
                 pixmap = QLabel()
+                vbox.addStretch()
                 if tower.level == 2:
                     pixmap.setPixmap(tower.upgradedPicture)
                 else:
                     pixmap.setPixmap(tower.picture)
-                vbox.addStretch()
                 vbox.addWidget(pixmap)
                 vbox.addStretch()
                 
                 grid.addLayout(vbox, 0, 0)
                 
-                #I need to set fixed decimals here.
                 towerStats = QLabel(tower.name + " Tower Stats", self)
-                power = QLabel("Power: " + str(tower.power), self)
-                towerRange = QLabel("Range: " + str(tower.range), self)
+                power = QLabel("Power: {:.0f}".format(tower.power), self)
+                towerRange = QLabel("Range: {:.0f}".format(tower.range), self)
                 fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
                 level = QLabel("Level: " + str(tower.level), self)
             
@@ -239,15 +234,13 @@ class MapView(QFrame):
                 vbox2.addWidget(level)
             
                 grid.addLayout(vbox2, 0, 1)
-            
+        
                 vbox3 = QVBoxLayout()
                 
-            
                 if self.clickedTower.maxLevel > self.clickedTower.level:
                     upgradeButton = QPushButton("Upgrade for " + str(tower.upgradePrice))
                     vbox3.addWidget(upgradeButton)
                     upgradeButton.clicked.connect(self.upgrade)
-                    
                 else:
                     maxLevel = QLabel("Tower at maximum level.")
                     vbox3.addWidget(maxLevel)
@@ -262,17 +255,18 @@ class MapView(QFrame):
                 doneButton.clicked.connect(self.popUp.deleteLater)
         
         else:
-            self.statusBarMessage("The game has ended.")
+            self.statusBarMessage("The game has already ended. Stop trying to do stuff.")
             
     
     def upgrade(self):
         
-        if self.clickedTower.maxLevel > self.clickedTower.level:
+        if self.clickedTower.level < self.clickedTower.maxLevel:
             
             if self.parent.gameboard.money >= self.clickedTower.upgradePrice:
                 self.clickedTower.upgrade()
                 self.parent.gameboard.buy(self.clickedTower.upgradePrice)
                 self.statusBarMessage("Tower upgraded")
+                self.parent.gamestats.update()
                 self.popUp.deleteLater()
         
             else:
@@ -283,24 +277,22 @@ class MapView(QFrame):
     
     
     def summonEnemy(self):
-        
+        # Summons an enemy at given intervals
         waveIndex = self.parent.gameboard.currentWave - 1
         
         if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
-        
-            if (self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0]) == 0:
-                
-                if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
+            # self.parent.gameboard.waves[waveIndex][0] gives the enemy interval for that wave
+            if self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0] == 0:
                     
-                    if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
-                        self.parent.checkIsWaveDone()
+                if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
+                    self.parent.checkIsWaveDone()
     
-                    elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
-                        self.parent.checkIsWaveDone()
+                elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
+                    self.parent.checkIsWaveDone()
     
     
     def checkNextEnemy(self, name, enemyType):
-        
+        # This method could probably be changed a bit, but it does it's job. I'll update it if I have time.
         enemyIndex = self.parent.gameboard.currentEnemy - 1
         waveIndex = self.parent.gameboard.currentWave - 1
         
@@ -322,24 +314,28 @@ class MapView(QFrame):
         
         if noOfSummonedEnemies > 0:
             i = 0
+            
             while i < noOfSummonedEnemies:
                 enemy = self.parent.gameboard.enemiesSummoned[i]
+                
                 if not enemy.isFinished and not enemy.isDead:
-                    enemy.moveEnemy() #calculates the new posX and posY
-                    enemy.move(enemy.posX - enemy._picture.width() / 2, enemy.posY - enemy._picture.height() / 2)
+                    enemy.moveEnemy() # calculates the new posX and posY
+                    enemy.move(enemy.posX - enemy._picture.width() / 2, enemy.posY - enemy._picture.height() / 2) # actually moves the enemy
+                    
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
                         self.parent.update()
+                        
                         if self.parent.gameboard.currentLives <= 0:
                             self.parent.loseGame()
                         else:
-                            self.checkIfGameEnded()    
+                            self.checkIfGameEnded()
+                              
                 i += 1        
                 
     
     def enemyClick(self, enemy):
-        #Opens an info screen on the enemy.
-        
+        # Opens an info screen on the enemy
         if self.parent.gameover == False:
         
             if self.parent.isTowerSelected == False:
@@ -350,11 +346,10 @@ class MapView(QFrame):
                 grid = QGridLayout()
                 self.popUp.setLayout(grid)
             
-                #I need to set fxed decimals here.
                 enemyStats = QLabel("Enemy Stats", self)
                 name = QLabel("Name: " + str(enemy.name), self)
                 speed = QLabel("Speed: " + str(enemy.speed), self)
-                health = QLabel("Health " + str(enemy.health), self)
+                health = QLabel("Health {:.0}".format(enemy.health), self)
                 pixmap = QLabel()
                 pixmap.setPixmap(enemy.picture)
             
@@ -384,10 +379,14 @@ class MapView(QFrame):
         
         
     def checkShooting(self):
-        
+        # We go trough the towers we have build and check if they have enemies in range
         for tower in self.parent.gameboard.towersBuild:
             
+            # This is kind of a simple method of checking the firerate
+            # It could be improved, so that if the tower hasn't fired for a while and an enemy comes into it's range it shoots immediately.
             if self.parent.timePassed % tower.fireRate == 0:
+                # We always shoot the enemy that has moved to the furthest block. If there's more than one enemy in the same block we select the one that's first in the list.
+                # Again, this method could be improved. We could check which enemy is actually furthest down the path in actual pixels.
                 i = 0
                 maxBlocks = -1
                 targetEnemy = None
@@ -395,7 +394,7 @@ class MapView(QFrame):
                 while i < len(self.parent.gameboard.enemiesSummoned):
                     
                     enemy = self.parent.gameboard.enemiesSummoned[i]
-                    
+                    # We shouldn't shoot enemies that are dead or have already reached the end of the path.
                     if enemy.isFinished == False and enemy.isDead == False:
                         if tower.inRange(enemy):
                             if enemy.blocksMoved > maxBlocks:
@@ -416,13 +415,19 @@ class MapView(QFrame):
             
             if not projectile.isFinished:
                 projectile.move()
-                # self.update()
                 
                 if projectile.checkIfHit():
                     # self.statusBarMessage(projectile.destination.name + " takes a hit of " + str(projectile.damage) + " damage.")
+                    if projectile.name == "Cannonball":
+                        # Cannonballs damage all enemies in the same block.
+                        # This method could also be improved. We should probably hit enemies that are within a certain range from the target enemy instead of being in the same block.
+                        for enemy in self.parent.gameboard.enemiesSummoned:
+                            if enemy != projectile.destination and enemy.currentBlock == projectile.destination.currentBlock:
+                                enemy.getHit(projectile.damage)
+                                enemy.checkIfDead()
                     
                     if projectile.destination.checkIfDead():
-                        self.statusBarMessage(projectile.destination.name + " is dead. You get " + str(projectile.destination.reward) + "coins.")
+                        # self.statusBarMessage(projectile.destination.name + " is dead. You get " + str(projectile.destination.reward) + " coins.")
                         self.parent.gameboard.addMoney(projectile.destination.reward)
                         self.parent.gamestats.update()
 
@@ -430,22 +435,25 @@ class MapView(QFrame):
     
     
     def checkIfGameEnded(self):
-        
+        # This method checks if all waves have been sent and all summoned enemies have either reached their destination or died.
         allDone = False
         
         if self.parent.gameboard.currentWave >= len(self.parent.gameboard.waves):
-            self.statusBarMessage("Last wave!")
-            
+            # self.statusBarMessage("Last wave!")
+            # Check how many enemies the map has in total
             totalEnemies = 0
             for wave in self.parent.gameboard.waves:
                 totalEnemies += len(wave[1])
             
+            # Then we compare that number to the number of summoned enemies
             if len(self.parent.gameboard.enemiesSummoned) == totalEnemies:
-                self.statusBarMessage("All enemies summoned!")
+                # self.statusBarMessage("All enemies summoned!")
                 allDone = True
+                # Then we check if they are all dead or finished
                 for enemy in self.parent.gameboard.enemiesSummoned:
                     if enemy.isFinished == False and enemy.isDead == False:
                         allDone = False
-                        
+        
+        # If so the game has ended and the player is victorious               
         if allDone:
             self.parent.winGame()

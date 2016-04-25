@@ -95,3 +95,4 @@ class Cannonball(Projectile):
         super().__init__(origin, destination)
         self._speed = 6
         self._name = "Cannonball"
+        

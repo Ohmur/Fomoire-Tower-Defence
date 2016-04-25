@@ -4,10 +4,8 @@ Created on 6.3.2016
 @author: Rohmu
 '''
 
-from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPixmap
 from math import sqrt
-from projectile import *
 
 class Tower(object):
     
@@ -107,7 +105,7 @@ class Musketeer(Tower):
     def upgrade(self):
         self._power += self._power / 4
         self._range += self._range / 3
-        self._fireRate -= 1
+        self._fireRate -= 5
         self._level += 1
         
     
@@ -135,7 +133,7 @@ class Cannon(Tower):
     def upgrade(self):
         self._power += self._power / 2
         self._range += self._range / 4
-        self._fireRate -= 1
+        self._fireRate -= 3
         self._level += 1
         
         
