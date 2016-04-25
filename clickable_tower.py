@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QAbstractButton
 from PyQt5.QtGui import QPainter
 
 class ClickableTower(QAbstractButton):
+    # This is the physical version of a tower. With little tweaking I could probably make just one tower class.
     
     def __init__(self, tower, parent):
         super(ClickableTower, self).__init__(parent)

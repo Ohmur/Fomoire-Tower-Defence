@@ -4,8 +4,10 @@ Created on 6.3.2016
 @author: Rohmu
 '''
 
+import os.path
 from PyQt5.QtGui import QPixmap
 from math import sqrt
+from projectile import *
 
 class Tower(object):
     
@@ -98,8 +100,8 @@ class Musketeer(Tower):
         self._size = 2
         self._level = 1
         self._maxLevel = 2
-        self._picture = QPixmap("musketeer.png")
-        self._upgradedPicture = QPixmap("musketeer_upgraded.png")
+        self._picture = QPixmap(os.path.join('./Pictures/', "musketeer.png"))
+        self._upgradedPicture = QPixmap(os.path.join('./Pictures/', "musketeer_upgraded.png"))
     
     
     def upgrade(self):
@@ -126,8 +128,8 @@ class Cannon(Tower):
         self._size = 2
         self._level = 1
         self._maxLevel = 2
-        self._picture = QPixmap("cannon.png")
-        self._upgradedPicture = QPixmap("cannon_upgraded.png")
+        self._picture = QPixmap(os.path.join('./Pictures/', "cannon.png"))
+        self._upgradedPicture = QPixmap(os.path.join('./Pictures/', "cannon_upgraded.png"))
         
         
     def upgrade(self):

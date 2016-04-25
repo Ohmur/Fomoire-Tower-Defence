@@ -4,6 +4,7 @@ Created on 9.4.2016
 @author: Rohmu
 '''
 
+import os.path
 from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber
 from globals import *
 from tower import *
@@ -35,16 +36,8 @@ class BottomButtons(QFrame):
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
         
-        '''
-        font = QFont()
-        font.setPointSize(20)
-        
-        buildLabel = QLabel('Build')
-        buildLabel.setFont(font)
-        '''
-        
         towerLabel = QLabel()
-        towerLabel.setPixmap(QPixmap("tower.png"))
+        towerLabel.setPixmap(QPixmap(os.path.join('./Pictures/', "tower.png")))
         
         vbox.addWidget(towerLabel)
         
@@ -58,14 +51,13 @@ class BottomButtons(QFrame):
         # We go through the list of different towers in the map and add buttons for them to the bottom left corner of the screen.
         while i < len(towers):
             if towers[i] == "t1":
-                # I should add the price to the picture
-                self.musketeerButton = BuyButton(QPixmap("musketeer_buybutton.png"), QPixmap("musketeer_buybutton_hover.png"), QPixmap("musketeer_buybutton_pressed.png"), self)
+                self.musketeerButton = BuyButton(QPixmap(os.path.join('./Pictures/', "musketeer_buybutton.png")), QPixmap(os.path.join('./Pictures/', "musketeer_buybutton_hover.png")), QPixmap(os.path.join('./Pictures/', "musketeer_buybutton_pressed.png")), self)
                 self.musketeerButton.move(buttons*towerButtonSize + 10, 50)
                 self.musketeerButton.clicked.connect(self.musketeerButtonClick)
                 hbox.addWidget(self.musketeerButton)
                 buttons += 1
             elif towers[i] == "t2":
-                self.cannonButton = BuyButton(QPixmap("cannon_buybutton.png"), QPixmap("cannon_buybutton_hovered.png"), QPixmap("cannon_buybutton_pressed.png"), self)
+                self.cannonButton = BuyButton(QPixmap(os.path.join('./Pictures/', "cannon_buybutton.png")), QPixmap(os.path.join('./Pictures/', "cannon_buybutton_hovered.png")), QPixmap(os.path.join('./Pictures/', "cannon_buybutton_pressed.png")), self)
                 self.cannonButton.move(buttons*towerButtonSize + 10, 50)
                 self.cannonButton.clicked.connect(self.cannonButtonClick)
                 hbox.addWidget(self.cannonButton)
@@ -84,13 +76,6 @@ class BottomButtons(QFrame):
         vbox2.addWidget(self.lcd)
         vbox2.addStretch()
         
-        '''
-        self.pausePixmap = QPixmap("pause.png")
-        self.pauseIcon = QIcon(self.pausePixmap)
-        self.pauseButton = QPushButton()
-        self.pauseButton.setIcon(self.pauseIcon)
-        self.pauseButton.setIconSize(self.pausePixmap.rect().size())
-        '''
         self.pauseButton = QPushButton('Pause')
         self.pauseButton.clicked.connect(self.pauseGame)
     
@@ -102,46 +87,6 @@ class BottomButtons(QFrame):
         
         self.show()
     
-    
-    '''
-    # These methods draw the tower stats into the bottom of the screen when a tower is being bought.
-    # For some reason these methods make the _timer not work and the game starts to lag.
-    
-    def paintEvent(self, event):
-
-        qp = QPainter()
-        qp.begin(self)
-        if self.parent._isTowerSelected == True:
-            self.drawTowerInfo(self.parent.selectedTower, qp)
-        else:
-            noTowerLabel = QLabel("")
-            self.grid.addWidget(noTowerLabel, 0, 1)   
-        
-        qp.end()
-    
-    
-    def drawTowerInfo(self, tower, qp):
-        
-        towerStats = QLabel(tower.name + " Tower Stats", self)
-        power = QLabel("Power: " + str(tower.power), self)
-        towerRange = QLabel("Range: " + str(tower.range), self)
-        fireRate = QLabel("Rate of Fire: " + str(tower.fireRate), self)
-        level = QLabel("Level: " + str(tower.level), self)
-        
-        vbox = QVBoxLayout()
-        
-        vbox.addWidget(towerStats)
-        vbox.addWidget(power)
-        vbox.addWidget(towerRange)
-        vbox.addWidget(fireRate)
-        vbox.addWidget(level)
-    
-        hbox = QHBoxLayout()
-        vbox.addLayout(hbox)
-        hbox.addStretch()
-        
-        self.grid.addLayout(vbox, 0, 1)
-    '''
         
     def musketeerButtonClick(self):
         
@@ -177,12 +122,6 @@ class BottomButtons(QFrame):
         
             if self.isPaused == False:
                 self.statusBarMessage('Game paused')
-                '''
-                self.playPixmap = QPixmap("play.png")
-                self.playIcon = QIcon(self.playPixmap)
-                self.pauseButton.setIcon(self.playIcon) 
-                self.pauseButton.setIconSize(self.playPixmap.rect().size())
-                '''
                 self.pauseButton.setText('Play')
                 self.isPaused = True 
                 self.parent.timer.stop()  
@@ -190,9 +129,6 @@ class BottomButtons(QFrame):
                 
             else:
                 self.statusBarMessage('')
-                '''
-                self.pauseButton.setIcon(self.pauseIcon)
-                '''
                 self.pauseButton.setText('Pause')
                 self.isPaused = False 
                 self.parent.timer.start(gameSpeed, self.parent)

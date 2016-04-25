@@ -162,6 +162,11 @@ class Gameboard:
                                                 # river/water
                                                 self._occupied.append([x, y])
                                                 self._river.append([x, y])
+                                            elif symbol == "D":
+                                                # path on water
+                                                self._occupied.append([x, y])
+                                                self._river.append([x, y])
+                                                self._enemyPath.append([x, y])
                                             elif symbol == "P":
                                                 # path on a road
                                                 self._occupied.append([x, y])

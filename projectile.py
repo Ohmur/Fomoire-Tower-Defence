@@ -18,7 +18,8 @@ class Projectile(object):
         
     
     def move(self):
-        
+        # The projectile follows the target enemy. This means that projectile speeds have to be faster than the enemy speeds.
+        # This method could be improved by calculating the future enemy location where the projectile will aim, then the speed could be anything.
         fullDistance = sqrt(pow(self._posX - self._destination.posX, 2) + pow(self._posY - self._destination.posY, 2))
         
         if self._speed < fullDistance:

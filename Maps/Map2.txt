@@ -1,0 +1,45 @@
+#mapinfo
+name: Mag Itha
+size: 25x50
+lives: 20
+money: 1000
+towers: t1, t2
+path start: 5, 3
+
+#waves 
+number of waves: 6
+50, e1, e1, e1, e1, e1, e1
+30, e1, e1, e2, e1, e1, e2
+20, e1, e2, e2, e1, e1, e1, e2, e2
+10, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
+10, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+10, e1, e1, e1, e2, e1, e2, e2, e2, e2, e2, e2, e2, e2
+
+
+#map
+RRRRRRRRRRRRRRRRR0000000000000RRRRRRRRRRRRRRMM++++
+RRRRRRRRRRRRRRRR+++++++++++++00000000000+M++MM++M+
+RRRRRRRRRRRRRRR+++M+++++++++++++++000++++M++MM++M+
++RRRRRRRRRRRR+++++MMMMM+M++++++++++++++++MMMMMMMM+
+++RRRDRRRRR00+++++MMWCMMM+++++M+++++++++++MMMMMM++
+++000P000000++++++MMWWMMMM++MMM+++++++++++MMMMMM++
++++00P0000++++++0000000000000000++++++++++MMMMMM++
+++++0P0+++++++++0PPPPPPPPPPPPPP0+++++++++MMMMMMMM+
+++++0P0+++++++++0P000000000000P0+++++++++MCCMMMMM+
+++++0P00000000000P0++++++++++0P0+++++++++MCCMMMMM+
+++++0PPPPPPPPPPPPP0++++++++++0P0++0000000MCCMMMMM+
+++++000000000000000++++0000000P0++0PPPPPPPPQMMMMM+
++++++++++++++++++++++++0PPPPPPP0++0P00000000MMMMM+
+RRR++++++++++++++++++++0P0000000++0P0+++++++MMMMM+
+RRRRR++++++++++++++++++0P0++++++++0P0+++++++++++++
++RRRRRRRRRR++++++++++++0P0++++++++0P0+++++++++++++
++++RRRRRRRRRR+++++++++WWB0W+++++++WBW+++++++++++++
+++++++++RRRRRRRRRRRRRRWRDRRRRRRRRRWBWRRRR+++++++++
+++++++++++++RRRRRRRRRRRRBRRRRRRRRRWBWRRRRRR+++++++
+MMMM++++++++++++++++WW+0PW++++++++WBW+++RRRRR+++++
+MMMMMM+++++++++++++++++0P0++++++++0P0++++RRRRRRRRR
+MMMMMMMMM++++++++++++++0P0000000000P0+++++RRRRRRRR
+MMMMMMMMMMM++++++++++++0PPPPPPPPPPPP0+++++++++++++
+MMMMMMMMMMMMM++++++++++00000000000000+++++++++++++
+MMMMMMMMMMMMM+++++++++++++++++++++++++++++++++++++
+MMMMMMMMMMMMMM++++++++++++++++++++++++++++++++++++

@@ -1,18 +1,15 @@
 #mapinfo
-name: Map1
+name: TestMap
 size: 20x50
 lives: 10
 money: 600
 towers: t1, t2
-path start: 0, 8
+path start: 0, 7
 
 #waves 
-number of waves: 5
-100, e1, e1, e1, e1
-90, e1, e1, e1, e1, e1, e2
-80, e1, e2, e1, e1, e1, e1, e2, e2
-70, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
-60, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+number of waves: 2
+50, e1, e1, e1, e1
+10, e1, e1, e1, e1
 
 #map
 ++++++++++++++++++++++++++++RRR+++++++++++++++++++

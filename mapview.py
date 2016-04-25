@@ -4,6 +4,7 @@ Created on 9.4.2016
 @author: Rohmu
 '''
 
+import os.path
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton
 from globals import *
 from PyQt5.QtGui import QPainter, QCursor

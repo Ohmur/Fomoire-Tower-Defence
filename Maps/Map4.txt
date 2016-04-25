@@ -2,7 +2,7 @@
 name: Battle of Mag Tuireadh
 size: 26x51
 lives: 10
-money: 1000
+money: 800
 towers: t1, t2
 path start: 9, 5
 
@@ -23,9 +23,9 @@ MMMMMCCCMMM++RRRR++++++++RRR+++M+M+M+++++++M+M+M+++
 MMMMCCCCCMMM++++RRRR++++RRR++++MMMMM+++++++MMMMM+++
 MMMMCCQCCMMM++++++RRRRRRRR++++++MMM+++++++++MMM++++
 +++++0P0+++++++++++++RRRRR++++++MMM+M+M+M+M+MMM++++
-+++++0P0++++++++++++++RRRR++++++MMMMMMMMMMMMMMM++++
-+++++0P0++++++++++++++RRRR++++++MMMMMCCCMMMMMMM++++
-+++++0P0+++++++++++++++RRR++++RRMMMMMCQCMMMMMMMRR++
++++++0P0++++++++++++++RRR+++++++MMMMMMMMMMMMMMM++++
++++++0P0++++++++++++++RRR+++++++MMMMMCCCMMMMMMM++++
++++++0P0+++++++++++++++RR+++++RRMMMMMCQCMMMMMMMRR++
 +++++0P0++++++++++++++RRR++++RRRMMMMMCQCMMMMMMMRRR+
 +++++0P0++++MM+++++++RRR++++++RRRRRRRWBWRRRRRRRRR++
 +++++0P0+++MMMM+++++RRR++++++++++++++WBW+++++++++++

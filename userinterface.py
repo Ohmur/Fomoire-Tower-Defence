@@ -4,7 +4,7 @@ Created on 6.3.2016
 @author: Rohmu
 '''
 
-import sys
+import sys, os.path, time
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFrame, QLabel, QPushButton
 from globals import *
 from gameboard import Gameboard
@@ -15,7 +15,6 @@ from bottombuttons import BottomButtons
 from gamestats import GameStats
 from mapview import MapView
 from enemy import *
-import time
         
 
 class UserInterface(QMainWindow):
@@ -33,7 +32,7 @@ class UserInterface(QMainWindow):
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData("Map4.txt")
+        self._gameboard.readMapData(os.path.join('./Maps/', 'Map2.txt'))
         self.initUI()
         self.timer.start(gameSpeed, self)
         
@@ -43,7 +42,7 @@ class UserInterface(QMainWindow):
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
         self.setWindowTitle(self._gameboard.name)
-        self.setWindowIcon(QIcon('berserker_icon.png')) #Apparently this doens't work the same way on a mac.
+        self.setWindowIcon(QIcon(os.path.join('./Pictures/', 'berserker_icon.png'))) #Apparently this doens't work the same way on a mac.
         self.statusBar().showMessage('Ready!')
         vbox = QVBoxLayout()
         centralWidget.setLayout(vbox)
@@ -136,7 +135,7 @@ class UserInterface(QMainWindow):
         vbox = QVBoxLayout()
         
         youLost = QLabel()
-        youLost.setPixmap(QPixmap("game_over.png"))
+        youLost.setPixmap(QPixmap(os.path.join('./Pictures/', "game_over.png")))
         vbox.addWidget(youLost)
         
         doneButton = QPushButton("Done")
@@ -160,7 +159,7 @@ class UserInterface(QMainWindow):
         vbox = QVBoxLayout()
         
         youLost = QLabel()
-        youLost.setPixmap(QPixmap("victory.png"))
+        youLost.setPixmap(QPixmap(os.path.join('./Pictures/', "victory.png")))
         vbox.addWidget(youLost)
         
         doneButton = QPushButton("Done")
