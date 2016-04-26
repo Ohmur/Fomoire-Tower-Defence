@@ -19,5 +19,5 @@ rangeBrushColor = QColor(11, 118, 108, 140)
 towerButtonSize = 40
 projectileColor = QColor(90, 90, 90, 255)
 
+defaultGameSpeed = 30
 
-gameSpeed = 30

@@ -256,7 +256,7 @@ class MapView(QFrame):
                 doneButton.clicked.connect(self.popUp.deleteLater)
         
         else:
-            self.statusBarMessage("The game has already ended. Stop trying to do stuff.")
+            self.statusBarMessage("The game has ended. Stop doing stuff.")
             
     
     def upgrade(self):
@@ -350,7 +350,7 @@ class MapView(QFrame):
                 enemyStats = QLabel("Enemy Stats", self)
                 name = QLabel("Name: " + str(enemy.name), self)
                 speed = QLabel("Speed: " + str(enemy.speed), self)
-                health = QLabel("Health {:.0}".format(enemy.health), self)
+                health = QLabel("Health: " + str(enemy.health), self)
                 pixmap = QLabel()
                 pixmap.setPixmap(enemy.picture)
             
@@ -373,11 +373,11 @@ class MapView(QFrame):
                 location = QPoint(QCursor.pos())
                 self.popUp.move(location.x() - 100, location.y())
                 self.popUp.show()
-                doneButton.clicked.connect(self.popUp.deleteLater)
+                doneButton.clicked.connect(self.popUp.deleteLater())
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
-        
+
         
     def checkShooting(self):
         # We go trough the towers we have build and check if they have enemies in range

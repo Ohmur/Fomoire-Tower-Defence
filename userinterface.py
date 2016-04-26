@@ -19,9 +19,10 @@ from enemy import *
 
 class UserInterface(QMainWindow):
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent)
         self._gameboard = Gameboard()
+        self._parent = parent
         
         self._gameover = False
         
@@ -29,12 +30,14 @@ class UserInterface(QMainWindow):
         self._isTowerHovered = False
         self._towerBeingHovered = None
         self._selectedTower = None
+        
+        self._gameSpeed = self._parent.speed
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData(os.path.join('./Maps/', 'Map2.txt'))
+        self._gameboard.readMapData(os.path.join('./Maps/', self._parent.map))
         self.initUI()
-        self.timer.start(gameSpeed, self)
+        self.timer.start(self._gameSpeed, self)
         
 
     def initUI(self):
@@ -138,13 +141,13 @@ class UserInterface(QMainWindow):
         youLost.setPixmap(QPixmap(os.path.join('./Pictures/', "game_over.png")))
         vbox.addWidget(youLost)
         
-        doneButton = QPushButton("Done")
-        vbox.addWidget(doneButton)
+        done = QPushButton("Done")
+        vbox.addWidget(done)
 
         self.popUp.setLayout(vbox)
         self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 130, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
         self.popUp.show()
-        doneButton.clicked.connect(self.popUp.deleteLater)
+        done.clicked.connect(self.backToMainMenu)
     
     
     def winGame(self):
@@ -162,14 +165,24 @@ class UserInterface(QMainWindow):
         youLost.setPixmap(QPixmap(os.path.join('./Pictures/', "victory.png")))
         vbox.addWidget(youLost)
         
-        doneButton = QPushButton("Done")
-        vbox.addWidget(doneButton)
+        done = QPushButton("Done")
+        vbox.addWidget(done)
 
         self.popUp.setLayout(vbox)
         self.popUp.move(self.mapToGlobal(QPoint(0,0)).x() + self.gameboard.width*blockSize / 2 - 130, self.mapToGlobal(QPoint(0,0)).y() + self.gameboard.height*blockSize / 2)
         self.popUp.show()
-        doneButton.clicked.connect(self.popUp.deleteLater)
-    
+        done.clicked.connect(self.backToMainMenu)
+        
+        
+    def backToMainMenu(self):
+        self._parent.show()
+        self.popUp.deleteLater()
+        self.deleteLater()
+        
+
+    def getGameSpeed(self):
+        return self._gameSpeed
+
 
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
     selectedTower = property(getSelectedTower, setSelectedTower)
@@ -179,10 +192,12 @@ class UserInterface(QMainWindow):
     gameboard = property(getGameboard)
     timePassed = property(getTimePassed)
     gameover = property(getGameOver)
+    gameSpeed = property(getGameSpeed)
 
-        
+'''    
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     ex = UserInterface()
     sys.exit(app.exec_())
+'''

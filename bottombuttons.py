@@ -66,24 +66,24 @@ class BottomButtons(QFrame):
         
         hbox.addStretch()
         
-        hbox2 = QHBoxLayout()
-        vbox2 = QVBoxLayout()
-        hbox2.addStretch()
+        hbox3 = QHBoxLayout()
+        vbox3 = QVBoxLayout()
+        hbox3.addStretch()
         
         self.lcd = QLCDNumber(self)
         
-        vbox2.addStretch()
-        vbox2.addWidget(self.lcd)
-        vbox2.addStretch()
+        vbox3.addStretch()
+        vbox3.addWidget(self.lcd)
+        vbox3.addStretch()
         
         self.pauseButton = QPushButton('Pause')
         self.pauseButton.clicked.connect(self.pauseGame)
     
         # I could add a restart button
         
-        vbox2.addWidget(self.pauseButton)
+        vbox3.addWidget(self.pauseButton)
         
-        self.grid.addLayout(vbox2, 0, 2)
+        self.grid.addLayout(vbox3, 0,2)
         
         self.show()
     
@@ -131,7 +131,7 @@ class BottomButtons(QFrame):
                 self.statusBarMessage('')
                 self.pauseButton.setText('Pause')
                 self.isPaused = False 
-                self.parent.timer.start(gameSpeed, self.parent)
+                self.parent.timer.start(self.parent._gameSpeed, self.parent)
                 self.clockTimer.start(1000, self)
         
         else:
