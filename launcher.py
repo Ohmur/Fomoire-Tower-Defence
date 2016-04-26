@@ -101,6 +101,7 @@ class Launcher(QWidget):
     def getGameSpeed(self):
         return self.gameSpeed
     
+    
     map = property(getSelectedMap)
     speed = property(getGameSpeed)
 

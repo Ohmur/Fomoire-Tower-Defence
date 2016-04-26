@@ -20,7 +20,7 @@ from enemy import *
 class UserInterface(QMainWindow):
     
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent) 
         self._gameboard = Gameboard()
         self._parent = parent
         
@@ -194,10 +194,9 @@ class UserInterface(QMainWindow):
     gameover = property(getGameOver)
     gameSpeed = property(getGameSpeed)
 
-'''    
+ 
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     ex = UserInterface()
     sys.exit(app.exec_())
-'''

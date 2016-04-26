@@ -253,7 +253,7 @@ class MapView(QFrame):
                 location = QPoint(QCursor.pos())
                 self.popUp.move(location.x() - 180, location.y())
                 self.popUp.show()
-                doneButton.clicked.connect(self.popUp.deleteLater)
+                doneButton.clicked.connect(self.popUp.hide)
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
@@ -268,7 +268,7 @@ class MapView(QFrame):
                 self.parent.gameboard.buy(self.clickedTower.upgradePrice)
                 self.statusBarMessage("Tower upgraded")
                 self.parent.gamestats.update()
-                self.popUp.deleteLater()
+                self.popUp.hide()
         
             else:
                 self.statusBarMessage("Not enough money to upgrade.")
@@ -373,7 +373,7 @@ class MapView(QFrame):
                 location = QPoint(QCursor.pos())
                 self.popUp.move(location.x() - 100, location.y())
                 self.popUp.show()
-                doneButton.clicked.connect(self.popUp.deleteLater())
+                doneButton.clicked.connect(self.popUp.hide)
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
