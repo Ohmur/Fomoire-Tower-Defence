@@ -18,8 +18,7 @@ class GameStats(QFrame):
         super(GameStats, self).__init__(parent)
         self.parent = parent
         self.initUI(self.parent.gameboard)
-        self.startingLives = self.parent.gameboard.startingLives
-    
+        
     
     def initUI(self, gameboard): 
 
@@ -45,7 +44,7 @@ class GameStats(QFrame):
         self.heart_lost = QPixmap(os.path.join('./Pictures/', 'heart_lost.png'))
         i = 1
         
-        while i <= gameboard.startingLives:
+        while i <= self.parent.gameboard.startingLives:
             heartLabel = QLabel(self)
             heartLabel.setPixmap(heart)
             self.hearts.append([True, heartLabel])
@@ -74,7 +73,7 @@ class GameStats(QFrame):
         else:
             qp.drawText((self.parent.gameboard.width - 1)*blockSize / 2 + 15, 28, str(len(self.parent.gameboard.waves)) + " / " + str(self.parent.gameboard.noOfWaves))
         
-        if self.startingLives > self.parent.gameboard.currentLives and self.hearts[self.parent.gameboard.currentLives][0] == True:
+        if self.parent.gameboard.startingLives > self.parent.gameboard.currentLives and self.hearts[self.parent.gameboard.currentLives][0] == True:
             self.hearts[self.parent.gameboard.currentLives][1].setPixmap(self.heart_lost)
             self.hearts[self.parent.gameboard.currentLives][0] = False
         

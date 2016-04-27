@@ -17,7 +17,6 @@ class Enemy(QAbstractButton):
         super(Enemy, self).__init__(parent)
         self._parent = parent
         self._path = path
-        self._size = 2
         self._isFinished = False
         self._isDead = False
         
@@ -276,8 +275,7 @@ class Barbarian(Enemy):
         self._name = "Barbarian"
         self._health = 100
         self._speed = 3
-        self._isFinished = False
-        self._picture = QPixmap(os.path.join('./Pictures/', "barbaari.png"))
+        self._picture = QPixmap(os.path.join('./Pictures/', "barbarian.png"))
         self._reward = 20
         self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood.png"))
            
@@ -289,7 +287,6 @@ class Berserker(Enemy):
         self._name = "Berserker"
         self._health = 80
         self._speed = 4
-        self._isFinished = False
         self._picture = QPixmap(os.path.join('./Pictures/', "berserker.png"))
         self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood2.png"))
         self._reward = 30

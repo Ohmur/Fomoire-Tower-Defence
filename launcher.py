@@ -23,7 +23,7 @@ class Launcher(QWidget):
     
     def initUI(self):
         
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 260)
         
         self.setWindowTitle('Fomoire!')
         fomoire = QPixmap(os.path.join('./Pictures/', "fomoire.png"))
@@ -32,47 +32,53 @@ class Launcher(QWidget):
         logo.setFixedSize(fomoire.size())
         logo.move(400 / 2 - fomoire.width() / 2, 15)
         
-        selectMap = QLabel("Select map:", self)
-        selectMap.move(50, 85)
+        towerDefence = QLabel('A Tower Defence Game', self)
+        towerDefence.move(130, 66)
+        
+        selectMap = QLabel('Select map:', self)
+        selectMap.move(50, 105)
         
         mapList = QComboBox(self)
         mapList.addItem('No map selected')
         
-        for map in os.listdir('./Maps/'):
-            mapList.addItem(map)
+        for mapFile in os.listdir('./Maps/'):
+            mapList.addItem(mapFile)
         
-        mapList.move(135, 82)
+        mapList.move(135, 102)
         mapList.activated[str].connect(self.onActivated)
         
-        gameSpeed = QLabel('Set game speed:', self)
-        gameSpeed.move(50, 120)
+        setSpeed = QLabel('Set game speed:', self)
+        setSpeed.move(50, 140)
         
-        gameSpeed = QLabel('Slow', self)
-        gameSpeed.move(170, 120)
+        slow = QLabel('Slow', self)
+        slow.move(170, 140)
         
         slider = QSlider(Qt.Horizontal, self)
         slider.setFocusPolicy(Qt.NoFocus)
         slider.setSliderPosition(100 - self.gameSpeed)
-        slider.setGeometry(210, 120, 100, 20)
+        slider.setGeometry(210, 140, 100, 20)
         slider.valueChanged[int].connect(self.changeValue)
         
-        gameSpeed = QLabel('Fast', self)
-        gameSpeed.move(325, 120)
+        fast = QLabel('Fast', self)
+        fast.move(325, 140)
         
-        self.start = QPushButton('Start game!', self)
-        self.start.move(145, 175)
-        self.start.clicked[bool].connect(self.startGame)
+        start = QPushButton('Start game!', self)
+        start.move(145, 175)
+        start.clicked[bool].connect(self.startGame)
         
-        self.quit = QPushButton('Quit', self)
-        self.quit.move(168, 205)
-        self.quit.clicked[bool].connect(qApp.quit)
+        quitButton = QPushButton('Quit', self)
+        quitButton.move(168, 210)
+        quitButton.clicked[bool].connect(qApp.quit)
         
+        barbarian = QLabel(self)
+        brbr = QPixmap(os.path.join('./Pictures/', "barbaari.png"))
+        barbarian.setPixmap(brbr)
+        barbarian.move(70, 185)
         
-        '''
-        self.speed = QLabel(self)
-        self.speed.setNum(self.gameSpeed)
-        self.speed.move(310, 120)
-        '''
+        berserker = QLabel(self)
+        berber = QPixmap(os.path.join('./Pictures/', "berserker_left.png"))
+        berserker.setPixmap(berber)
+        berserker.move(290, 185)
         
         self.show()
         

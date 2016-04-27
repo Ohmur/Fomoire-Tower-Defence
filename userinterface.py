@@ -7,9 +7,9 @@ Created on 6.3.2016
 import sys, os.path, time
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFrame, QLabel, QPushButton
 from globals import *
-from gameboard import Gameboard
+from gameboard import GameBoard
 from tower import *
-from PyQt5.Qt import QVBoxLayout, QBasicTimer, QHBoxLayout
+from PyQt5.Qt import QVBoxLayout, QBasicTimer, QHBoxLayout, QDesktopWidget
 from PyQt5.QtGui import QIcon
 from bottombuttons import BottomButtons
 from gamestats import GameStats
@@ -21,7 +21,7 @@ class UserInterface(QMainWindow):
     
     def __init__(self, parent):
         super().__init__(parent) 
-        self._gameboard = Gameboard()
+        self._gameBoard = GameBoard()
         self._parent = parent
         
         self._gameover = False
@@ -31,20 +31,22 @@ class UserInterface(QMainWindow):
         self._towerBeingHovered = None
         self._selectedTower = None
         
+        self._waveFinishTime = 0
+        
         self._gameSpeed = self._parent.speed
         self._timePassed = 0
         self.timer = QBasicTimer()
         
-        self._gameboard.readMapData(os.path.join('./Maps/', self._parent.map))
-        self.initUI()
+        self._gameBoard.readMapData(os.path.join('./Maps/', self._parent.map))
         self.timer.start(self._gameSpeed, self)
-        
+        self.initUI()
+              
 
     def initUI(self):
         
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
-        self.setWindowTitle(self._gameboard.name)
+        self.setWindowTitle(self._gameBoard.name)
         self.setWindowIcon(QIcon(os.path.join('./Pictures/', 'berserker_icon.png'))) #Apparently this doens't work the same way on a mac.
         self.statusBar().showMessage('Ready!')
         vbox = QVBoxLayout()
@@ -55,11 +57,15 @@ class UserInterface(QMainWindow):
         vbox.addWidget(self.gameStats)
         vbox.addWidget(self.mapView)
         vbox.addWidget(self.bottomButtons)
+        
+        screen = QDesktopWidget().screenGeometry()
+        self.setGeometry((screen.width() - (self.gameboard.width - 1) * 20) / 2, (screen.height() - self.gameboard.height * 20 - 200) / 2, 500, 400)
+        
         self.show()
         
         
     def getGameboard(self):
-        return self._gameboard
+        return self._gameBoard
     
     
     def getIsTowerSelected(self):
@@ -115,11 +121,12 @@ class UserInterface(QMainWindow):
                     
     def checkIsWaveDone(self):
 
-        waveIndex = self._gameboard.currentWave - 1
+        waveIndex = self._gameBoard.currentWave - 1
 
-        if self._gameboard.currentEnemy > len(self._gameboard.waves[waveIndex][1]):
-            self._gameboard.currentEnemy = 1
-            self._gameboard.currentWave += 1
+        if self._gameBoard.currentEnemy > len(self._gameBoard.waves[waveIndex][1]):
+            self._gameBoard.currentEnemy = 1
+            self._gameBoard.currentWave += 1
+            self._waveFinishTime = self._timePassed
             self.gamestats.update()
             return True
         else:
@@ -178,11 +185,15 @@ class UserInterface(QMainWindow):
         self._parent.show()
         self.popUp.deleteLater()
         self.deleteLater()
-        
+    
 
     def getGameSpeed(self):
         return self._gameSpeed
 
+
+    def getWaveFinishTime(self):
+        return self._waveFinishTime
+    
 
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
     selectedTower = property(getSelectedTower, setSelectedTower)
@@ -193,10 +204,13 @@ class UserInterface(QMainWindow):
     timePassed = property(getTimePassed)
     gameover = property(getGameOver)
     gameSpeed = property(getGameSpeed)
+    waveFinishTime = property(getWaveFinishTime)
 
- 
+
+''' 
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     ex = UserInterface()
     sys.exit(app.exec_())
+'''

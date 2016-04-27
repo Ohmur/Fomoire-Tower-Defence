@@ -1,14 +1,14 @@
 #mapinfo
 name: Battle of Mag Tuireadh
-size: 26x51
+size: 51x26
 lives: 10
 money: 800
 towers: t1, t2
-path start: 9, 5
+path start: 10, 6
 
 #waves 
 number of waves: 6
-80, e1, e1, e1, e2, e2, e1
+50, e1, e1, e1, e2, e2, e1, e2, e1, e2, e1, e2, e1
 80, e2, e1, e2, e1, e1, e2
 60, e1, e2, e2, e1, e1, e1, e2, e2
 70, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2

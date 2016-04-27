@@ -203,11 +203,11 @@ class MapView(QFrame):
             if self.parent.isTowerSelected == False:
                 self.clickedTower = tower
                 # self.statusBarMessage("Tower clicked")
-                self.popUp = QFrame()
-                self.popUp.setGeometry(500, 500, 100, 100)
+                self.towerPopUp = QFrame()
+                self.towerPopUp.setGeometry(500, 500, 100, 100)
             
                 grid = QGridLayout()
-                self.popUp.setLayout(grid)
+                self.towerPopUp.setLayout(grid)
                 
                 vbox = QVBoxLayout()
                 pixmap = QLabel()
@@ -251,9 +251,9 @@ class MapView(QFrame):
                 grid.addLayout(vbox3, 0, 2)
             
                 location = QPoint(QCursor.pos())
-                self.popUp.move(location.x() - 180, location.y())
-                self.popUp.show()
-                doneButton.clicked.connect(self.popUp.hide)
+                self.towerPopUp.move(location.x() - 180, location.y())
+                self.towerPopUp.show()
+                doneButton.clicked.connect(self.towerPopUp.hide)
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
@@ -268,7 +268,7 @@ class MapView(QFrame):
                 self.parent.gameboard.buy(self.clickedTower.upgradePrice)
                 self.statusBarMessage("Tower upgraded")
                 self.parent.gamestats.update()
-                self.popUp.hide()
+                self.towerPopUp.hide()
         
             else:
                 self.statusBarMessage("Not enough money to upgrade.")
@@ -283,7 +283,16 @@ class MapView(QFrame):
         
         if self.parent.gameboard.currentWave <= len(self.parent.gameboard.waves):
             # self.parent.gameboard.waves[waveIndex][0] gives the enemy interval for that wave
-            if self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0] == 0:
+            if self.parent.gameboard.currentEnemy == 1:
+                # This makes sure that there's a break between enemy waves, the length of the break can be defined in globals
+                if self.parent.timePassed - self.parent.waveFinishTime >= breakBetweenWaves:
+                    if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
+                        self.parent.checkIsWaveDone()
+    
+                    elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
+                        self.parent.checkIsWaveDone()
+            
+            elif self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0] == 0:
                     
                 if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
                     self.parent.checkIsWaveDone()
@@ -341,16 +350,16 @@ class MapView(QFrame):
         
             if self.parent.isTowerSelected == False:
                 self.statusBarMessage("Enemy clicked")
-                self.popUp = QFrame()
-                self.popUp.setGeometry(500, 500, 100, 100)
+                self.enemyPopUp = QFrame()
+                self.enemyPopUp.setGeometry(500, 500, 100, 100)
             
                 grid = QGridLayout()
-                self.popUp.setLayout(grid)
+                self.enemyPopUp.setLayout(grid)
             
-                enemyStats = QLabel("Enemy Stats", self)
-                name = QLabel("Name: " + str(enemy.name), self)
-                speed = QLabel("Speed: " + str(enemy.speed), self)
-                health = QLabel("Health: " + str(enemy.health), self)
+                enemyStats = QLabel("Enemy Stats")
+                name = QLabel("Name: " + str(enemy.name))
+                speed = QLabel("Speed: " + str(enemy.speed))
+                health = QLabel("Health: {:.0f}".format(enemy.health))
                 pixmap = QLabel()
                 pixmap.setPixmap(enemy.picture)
             
@@ -371,9 +380,9 @@ class MapView(QFrame):
                 grid.addLayout(vbox2, 0, 1)
                 
                 location = QPoint(QCursor.pos())
-                self.popUp.move(location.x() - 100, location.y())
-                self.popUp.show()
-                doneButton.clicked.connect(self.popUp.hide)
+                self.enemyPopUp.move(location.x() - 100, location.y())
+                self.enemyPopUp.show()
+                doneButton.clicked.connect(self.enemyPopUp.hide)
         
         else:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
@@ -385,7 +394,7 @@ class MapView(QFrame):
             
             # This is kind of a simple method of checking the firerate
             # It could be improved, so that if the tower hasn't fired for a while and an enemy comes into it's range it shoots immediately.
-            if self.parent.timePassed % tower.fireRate == 0:
+            if tower.lastShot == 0 or self.parent.timePassed - tower.lastShot >= tower.fireRate: #  or self.parent.timePassed % tower.fireRate == 0
                 # We always shoot the enemy that has moved to the furthest block. If there's more than one enemy in the same block we select the one that's first in the list.
                 # Again, this method could be improved. We could check which enemy is actually furthest down the path in actual pixels.
                 i = 0
@@ -406,6 +415,7 @@ class MapView(QFrame):
                 
                 if targetEnemy != None:
                     projectile = tower.shoot(targetEnemy)
+                    tower.lastShot = self.parent.timePassed
                     self.parent.gameboard.addProjectile(projectile)  
                     # self.statusBarMessage(tower.name + " shoots " + targetEnemy.name + " with " + projectile.name)
                 

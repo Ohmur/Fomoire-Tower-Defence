@@ -19,5 +19,10 @@ rangeBrushColor = QColor(11, 118, 108, 140)
 towerButtonSize = 40
 projectileColor = QColor(90, 90, 90, 255)
 
+breakBetweenWaves = 120
+
+towerTypes = ["t1", "t2"]
+enemyTypes = ["e1", "e2"]
+
 defaultGameSpeed = 30
 

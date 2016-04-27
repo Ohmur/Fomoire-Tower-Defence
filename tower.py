@@ -14,6 +14,7 @@ class Tower(object):
     def __init__(self):
         self._position_x = 0
         self._position_y = 0
+        self._lastShot = 0
     
     
     def getRange(self):
@@ -73,6 +74,14 @@ class Tower(object):
         return self._upgradedPicture
     
     
+    def getLastShot(self):
+        return self._lastShot
+    
+    
+    def setLastShot(self, time):
+        self._lastShot = time
+    
+    
     name = property(getName)
     range = property(getRange)
     fireRate = property(getFireRate)
@@ -85,6 +94,7 @@ class Tower(object):
     upgradedPicture = property(getUpgradedPicture)
     posX = property(getPositionX)
     posY = property(getPositionY)
+    lastShot = property(getLastShot, setLastShot)
     
 
 class Musketeer(Tower):
@@ -93,7 +103,7 @@ class Musketeer(Tower):
         super().__init__()
         self._name = "Musketeer"
         self._range = 70
-        self._fireRate = 10
+        self._fireRate = 15
         self._price = 100
         self._upgradePrice = 120
         self._power = 10

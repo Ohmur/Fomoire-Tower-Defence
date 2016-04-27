@@ -4,21 +4,22 @@ Created on 4.3.2016
 @author: Rohmu
 '''
 from corrupted_map_file_error import *
+from globals import towerTypes
+from globals import enemyTypes
 
 
-class Gameboard:
+class GameBoard:
 
     def __init__(self):
         self._name = ''
-        self._height = 20
         self._width = 50
+        self._height = 20
         self._startingLives = 10
         self._currentLives = self._startingLives
         self._money = 100
         self._noOfWaves = 0
         self._currentWave = 1
         self._currenEnemy = 1
-        self._isWaveInProgress = False
         self._waves = []
         self._towersAvailable = []
         self._towersBuild = []
@@ -61,10 +62,15 @@ class Gameboard:
                                 elif line_parts[0].strip().lower() == "size":
                                     heightAndWidth = line_parts[1].split("x")
                                     try:
-                                        self._height, self._width = int(heightAndWidth[0].strip()), int(heightAndWidth[1].strip())
+                                        self._width, self._height = int(heightAndWidth[0].strip()), int(heightAndWidth[1].strip())
                                         mapSize = True
                                     except ValueError:
-                                        raise CorruptedMapFileError("Reading map size failed.")  
+                                        raise CorruptedMapFileError("Reading map size failed.")
+                                    
+                                    if self._height < 7 or self._width < 25:
+                                        raise CorruptedMapFileError("The map is too small. It should be at least 25 blocks wide and 7 blocks high.")
+                                    elif self._height > 28 or self._width > 70:
+                                        raise CorruptedMapFileError("The map is too big. It should be maximum 70 blocks wide and 28 blocks high.")
                                     
                                 elif line_parts[0].strip().lower() == "lives":
                                     try:
@@ -73,27 +79,38 @@ class Gameboard:
                                         self.setStartingLives(lives)
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading starting lives failed.")
+                                    if self._startingLives <= 0 or self._startingLives > 20:
+                                        raise CorruptedMapFileError("Starting lives should be between at least 1 and maximum 20.")
                                     
                                 elif line_parts[0].strip().lower() == "money":
                                     try:
                                         self.setStartingMoney(int(line_parts[1].strip()))
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading starting money failed.")
+                                    if self._money < 100:
+                                        raise CorruptedMapFileError("Starting money should be at least 100.")
                                     
                                 elif line_parts[0].strip().lower() == "towers":
                                     towerlist = line_parts[1].split(",")
                                     for tower in towerlist:
-                                        self._towersAvailable.append(tower.strip().lower())
+                                        temp = tower.strip().lower()
+                                        if temp in towerTypes: 
+                                            self._towersAvailable.append(temp)
+                                        else:
+                                            raise CorruptedMapFileError("Unknown tower type.")
                                         
                                 elif line_parts[0].strip().lower() == "path start":
                                     coordinates = line_parts[1].split(",")
                                     try:
                                         for number in coordinates:
-                                            self._pathStart.append(int(number.strip().lower()))
+                                            self._pathStart.append(int(number.strip().lower()) - 1)
                                     except ValueError:
                                         raise CorruptedMapFileError("Reading path start coordinate failed.")
                                     if len(self._pathStart) != 2:
-                                        raise CorruptedMapFileError("Reading path start coordinate failed.")
+                                        raise CorruptedMapFileError("Reading path start coordinate failed. There should be two values x, y.")
+                                    for number in self._pathStart:
+                                        if number < 0:
+                                            raise CorruptedMapFileError("Reading path start coordinate failed. Value can not be less than 0.")
                                     
                             current_line = mapData.readline()
                                     
@@ -129,8 +146,12 @@ class Gameboard:
                                         x = 1
                                         
                                         while x < len(line_parts):
-                                            EnemiesInWave.append(line_parts[x].strip().lower())
-                                            x += 1
+                                            enemy = line_parts[x].strip().lower()
+                                            if enemy in enemyTypes:
+                                                EnemiesInWave.append(enemy)
+                                                x += 1
+                                            else:
+                                                raise CorruptedMapFileError("Unkown enemy type.") 
                                         self._waves.append([Interval, EnemiesInWave])
                                         i += 1
                                             
@@ -434,7 +455,7 @@ class Gameboard:
 '''
 def main():
     
-    gameboard1 = Gameboard()
+    gameboard1 = GameBoard()
     gameboard1.readMapData("Map1.txt")
     gameboard1.printMapInfo()
 

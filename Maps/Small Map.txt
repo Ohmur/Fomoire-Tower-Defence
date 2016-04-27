@@ -1,0 +1,29 @@
+#mapinfo
+name: Small Map
+size: 25x7
+lives: 10
+money: 500
+towers: t1, t2
+path start: 1, 4
+
+#waves 
+number of waves: 10
+100, e1, e1, e1, e2
+90, e1, e1, e2, e1, e1, e2
+80, e1, e2, e1, e1, e1, e1, e2, e2
+70, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
+60, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+40, e1, e1, e1, e2, e1
+60, e1, e1, e2, e1, e1, e2
+50, e1, e2, e1, e1, e1, e1, e2, e2
+40, e2, e2, e1, e1, e1, e2, e2, e1, e1, e1, e2
+30, e1, e1, e1, e1, e2, e1, e2, e1, e1, e2, e1, e2
+
+#map
++++++++++++++++++++++++++
++++++++++++++++++++++++++
+0000000000000000000000000
+PPPPPPPPPPPPPPPPPPPPPPPPP
+0000000000000000000000000
++++++++++++++++++++++++++
++++++++++++++++++++++++++

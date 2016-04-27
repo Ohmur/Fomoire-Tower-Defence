@@ -1,10 +1,10 @@
 #mapinfo
-name: Mag Itha
-size: 25x50
+name: Battle of Mag Itha
+size: 50x26
 lives: 20
 money: 1000
 towers: t1, t2
-path start: 5, 3
+path start: 6, 4
 
 #waves 
 number of waves: 6
@@ -17,29 +17,30 @@ number of waves: 6
 
 
 #map
-RRRRRRRRRRRRRRRRR0000000000000RRRRRRRRRRRRRRMM++++
-RRRRRRRRRRRRRRRR+++++++++++++00000000000+M++MM++M+
-RRRRRRRRRRRRRRR+++M+++++++++++++++000++++M++MM++M+
-+RRRRRRRRRRRR+++++MMMMM+M++++++++++++++++MMMMMMMM+
-++RRRDRRRRR00+++++MMWCMMM+++++M+++++++++++MMMMMM++
+RRRRRRRRRRRRRRRRRRR000000000RRRRRRRRRRRRRRRRR+++++
+RRRRRRRRRRRRRRRRR0000+++000000RRRRRRRRRRRMRRMM++++
+RRRRRRRRRRRRRRRR++++++++++++000000000000+M++MM++++
+RRRRRRRRRRRRRRR+++M+++++++++++++++000++++MM+MM++M+
++RRRRRRRRRRRR+++++MMMMM+M+++++++++++++++++MMMMM+M+
+++RRRDRRRRR00+++++MMWCMMM+++++M+++++++++++MMMMMMM+
 ++000P000000++++++MMWWMMMM++MMM+++++++++++MMMMMM++
 +++00P0000++++++0000000000000000++++++++++MMMMMM++
-++++0P0+++++++++0PPPPPPPPPPPPPP0+++++++++MMMMMMMM+
+++++0P0+++++++++0PPPPPPPPPPPPPP0+++++++++MMMMMMM++
 ++++0P0+++++++++0P000000000000P0+++++++++MCCMMMMM+
 ++++0P00000000000P0++++++++++0P0+++++++++MCCMMMMM+
 ++++0PPPPPPPPPPPPP0++++++++++0P0++0000000MCCMMMMM+
 ++++000000000000000++++0000000P0++0PPPPPPPPQMMMMM+
 +++++++++++++++++++++++0PPPPPPP0++0P00000000MMMMM+
 RRR++++++++++++++++++++0P0000000++0P0+++++++MMMMM+
-RRRRR++++++++++++++++++0P0++++++++0P0+++++++++++++
+RRRRR++++++++++++++++++0P0++++++++0P0++++++++MMM++
 +RRRRRRRRRR++++++++++++0P0++++++++0P0+++++++++++++
 +++RRRRRRRRRR+++++++++WWB0W+++++++WBW+++++++++++++
 ++++++++RRRRRRRRRRRRRRWRDRRRRRRRRRWBWRRRR+++++++++
 ++++++++++++RRRRRRRRRRRRBRRRRRRRRRWBWRRRRRR+++++++
-MMMM++++++++++++++++WW+0PW++++++++WBW+++RRRRR+++++
-MMMMMM+++++++++++++++++0P0++++++++0P0++++RRRRRRRRR
-MMMMMMMMM++++++++++++++0P0000000000P0+++++RRRRRRRR
-MMMMMMMMMMM++++++++++++0PPPPPPPPPPPP0+++++++++++++
-MMMMMMMMMMMMM++++++++++00000000000000+++++++++++++
-MMMMMMMMMMMMM+++++++++++++++++++++++++++++++++++++
-MMMMMMMMMMMMMM++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++WW+0PW++++++++WBW+++RRRRR+++++
++++++++++++++++++++++++0P0++++++++0P0++++RRRRRRRRR
++++++++++++++++++++++++0P0000000000P0+++++RRRRRRRR
++++++++++++++++++++++++0PPPPPPPPPPPP0+++++++++++++
++++++++++++++++++++++++00000000000000+++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++
