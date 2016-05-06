@@ -57,7 +57,7 @@ class GameBoard:
                                 line_parts = current_line.split(":")
                                 
                                 if line_parts[0].strip().lower() == "name":
-                                    self.setMapName(line_parts[1].strip())
+                                    self._name = line_parts[1].strip()
                                     
                                 elif line_parts[0].strip().lower() == "size":
                                     heightAndWidth = line_parts[1].split("x")
@@ -94,7 +94,7 @@ class GameBoard:
                                     towerlist = line_parts[1].split(",")
                                     for tower in towerlist:
                                         temp = tower.strip().lower()
-                                        if temp in towerTypes: 
+                                        if temp in towerTypes:
                                             self._towersAvailable.append(temp)
                                         else:
                                             raise CorruptedMapFileError("Unknown tower type.")
@@ -215,6 +215,10 @@ class GameBoard:
                                                 # mountain/gray
                                                 self._occupied.append([x, y])
                                                 self._mountain.append([x, y])
+                                            elif symbol == "X":
+                                                self._occupied.append([x, y])
+                                                self._mountain.append([x, y])
+                                                self._enemyPath.append([x, y])
                                             else:
                                                 raise CorruptedMapFileError("Unknown symbol in map layout.")
                                             x += 1

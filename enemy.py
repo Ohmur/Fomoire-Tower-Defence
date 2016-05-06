@@ -35,6 +35,7 @@ class Enemy(QAbstractButton):
             self._direction = "R"
         elif self._currentBlock[0] > self._nextBlock[0]:
             self._direction = "L"
+            self._picture = self._leftPicture
         elif self._currentBlock[1] < self._nextBlock[1]:
             self._direction = "D"
         elif self._currentBlock[1] > self._nextBlock[1]:
@@ -57,6 +58,7 @@ class Enemy(QAbstractButton):
                     self._position_y += y
                     self._position_x += x
                     self._direction = "R"
+                    self._picture = self._rightPicture
             elif self._direction == "U":
                 if (self._position_y - self._speed) > (self._currentBlock[1] * blockSize + blockSize / 2):
                     self._position_y -= self._speed
@@ -66,6 +68,7 @@ class Enemy(QAbstractButton):
                     self._position_y -= y
                     self._position_x += x
                     self._direction = "R"
+                    self._picture = self._rightPicture
                 
         elif self._currentBlock[0] > self._nextBlock[0]:
             if self._direction == "L":
@@ -79,6 +82,7 @@ class Enemy(QAbstractButton):
                     self._position_y += y
                     self._position_x -= x
                     self._direction = "L"
+                    self._picture = self._leftPicture
             elif self._direction == "U":
                 if (self._position_y - self._speed) > (self._currentBlock[1] * blockSize + blockSize / 2):
                     self._position_y -= self._speed
@@ -87,7 +91,8 @@ class Enemy(QAbstractButton):
                     y = self._speed - x
                     self._position_y -= y
                     self._position_x -= x
-                    self._direction = "L"    
+                    self._direction = "L"
+                    self._picture = self._leftPicture 
                 
         elif self._currentBlock[1] < self._nextBlock[1]:
             if self._direction == "D":
@@ -145,6 +150,9 @@ class Enemy(QAbstractButton):
             self._currentBlock = self._path[self._blocksMoved]
             if self._blocksMoved < len(self._path) - 1:
                 self._nextBlock = self._path[self._blocksMoved + 1]
+    
+        # Then we actually move the enemy
+        self.move(self.posX - self._picture.width() / 2, self.posY - self._picture.height() / 2) 
     
     
     def checkIfFinished(self):
@@ -276,7 +284,9 @@ class Barbarian(Enemy):
         self._health = 100
         self._speed = 3
         self._picture = QPixmap(os.path.join('./Pictures/', "barbarian.png"))
-        self._reward = 20
+        self._rightPicture = QPixmap(os.path.join('./Pictures/', "barbarian.png"))
+        self._leftPicture = QPixmap(os.path.join('./Pictures/', "barbarian_left.png"))
+        self._reward = 5
         self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood.png"))
            
         
@@ -288,7 +298,9 @@ class Berserker(Enemy):
         self._health = 80
         self._speed = 4
         self._picture = QPixmap(os.path.join('./Pictures/', "berserker.png"))
+        self._rightPicture = QPixmap(os.path.join('./Pictures/', "berserker.png"))
+        self._leftPicture = QPixmap(os.path.join('./Pictures/', "berserker_left.png"))
         self._deadPicture = QPixmap(os.path.join('./Pictures/', "blood2.png"))
-        self._reward = 30
+        self._reward = 10
         
         

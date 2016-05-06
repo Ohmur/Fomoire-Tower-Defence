@@ -105,6 +105,10 @@ class UserInterface(QMainWindow):
         return self._timePassed
     
     
+    def setWaveFinishTime(self, value):
+        self._waveFinishTime = value
+    
+    
     def getGameOver(self):
         return self._gameover
     
@@ -118,20 +122,6 @@ class UserInterface(QMainWindow):
         self.mapView.moveProjectiles()
         self.mapView.update()
        
-                    
-    def checkIsWaveDone(self):
-
-        waveIndex = self._gameBoard.currentWave - 1
-
-        if self._gameBoard.currentEnemy > len(self._gameBoard.waves[waveIndex][1]):
-            self._gameBoard.currentEnemy = 1
-            self._gameBoard.currentWave += 1
-            self._waveFinishTime = self._timePassed
-            self.gamestats.update()
-            return True
-        else:
-            return False
-    
     
     def loseGame(self):
         self.bottomButtons.clockTimer.stop()
@@ -204,7 +194,7 @@ class UserInterface(QMainWindow):
     timePassed = property(getTimePassed)
     gameover = property(getGameOver)
     gameSpeed = property(getGameSpeed)
-    waveFinishTime = property(getWaveFinishTime)
+    waveFinishTime = property(getWaveFinishTime, setWaveFinishTime)
 
 
 ''' 

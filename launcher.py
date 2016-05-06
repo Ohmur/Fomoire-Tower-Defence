@@ -45,7 +45,7 @@ class Launcher(QWidget):
             mapList.addItem(mapFile)
         
         mapList.move(135, 102)
-        mapList.activated[str].connect(self.onActivated)
+        mapList.activated[str].connect(self.selectMap)
         
         setSpeed = QLabel('Set game speed:', self)
         setSpeed.move(50, 140)
@@ -57,7 +57,7 @@ class Launcher(QWidget):
         slider.setFocusPolicy(Qt.NoFocus)
         slider.setSliderPosition(100 - self.gameSpeed)
         slider.setGeometry(210, 140, 100, 20)
-        slider.valueChanged[int].connect(self.changeValue)
+        slider.valueChanged[int].connect(self.changeGameSpeed)
         
         fast = QLabel('Fast', self)
         fast.move(325, 140)
@@ -71,7 +71,7 @@ class Launcher(QWidget):
         quitButton.clicked[bool].connect(qApp.quit)
         
         barbarian = QLabel(self)
-        brbr = QPixmap(os.path.join('./Pictures/', "barbaari.png"))
+        brbr = QPixmap(os.path.join('./Pictures/', "barbarian.png"))
         barbarian.setPixmap(brbr)
         barbarian.move(70, 185)
         
@@ -83,13 +83,12 @@ class Launcher(QWidget):
         self.show()
         
     
-    def changeValue(self, value):
+    def changeGameSpeed(self, value):
         
         self.gameSpeed = 100 - value
-        #self.speed.setNum(self.gameSpeed)
         
     
-    def onActivated(self, text):
+    def selectMap(self, text):
         self.selectedMap = text
         
         

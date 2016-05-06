@@ -109,15 +109,15 @@ class MapView(QFrame):
         closest_corner_x = 0
         closest_corner_y = 0      
         
-        if mouse_x % 20 < 10:
-            closest_corner_x = mouse_x - (mouse_x % 20)
+        if mouse_x % blockSize < blockSize / 2:
+            closest_corner_x = mouse_x - (mouse_x % blockSize)
         else:
-            closest_corner_x = mouse_x + (20 - mouse_x % 20)
+            closest_corner_x = mouse_x + (blockSize - mouse_x % blockSize)
                         
-        if mouse_y % 20 < 10:
-            closest_corner_y = mouse_y - (mouse_y % 20)
+        if mouse_y % blockSize < blockSize / 2:
+            closest_corner_y = mouse_y - (mouse_y % blockSize)
         else:
-            closest_corner_y = mouse_y + (20 - mouse_y % 20)
+            closest_corner_y = mouse_y + (blockSize - mouse_y % blockSize)
             
         return closest_corner_x, closest_corner_y
 
@@ -130,7 +130,7 @@ class MapView(QFrame):
                 
                 if self.parent.isTowerSelected == True:
                     # We calculate the bottom right block for the tower
-                    block1 = [int(self.mouse_x / 20), int(self.mouse_y / 20)]
+                    block1 = [int(self.mouse_x / blockSize), int(self.mouse_y / blockSize)]
                     
                     # We need to make sure that the tower doesn't go over the borders of the gameboard
                     if block1[0] > 0 and block1[1] > 0 and block1[0] < self.parent.gameboard.width and block1[1] < self.parent.gameboard.height:
@@ -154,7 +154,7 @@ class MapView(QFrame):
                             tower.setPosition(self.mouse_x, self.mouse_y)
                                 
                             placedTower = ClickableTower(tower, self)
-                            placedTower.move(block3[0] * 20, block3[1] * 20)
+                            placedTower.move(block3[0] * blockSize, block3[1] * blockSize)
                             placedTower.show()
                             
                             # Then we add the tower blocks to the list of occupied tiles   
@@ -287,18 +287,32 @@ class MapView(QFrame):
                 # This makes sure that there's a break between enemy waves, the length of the break can be defined in globals
                 if self.parent.timePassed - self.parent.waveFinishTime >= breakBetweenWaves:
                     if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
-                        self.parent.checkIsWaveDone()
+                        self.checkIsWaveDone()
     
                     elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
-                        self.parent.checkIsWaveDone()
+                        self.checkIsWaveDone()
             
             elif self.parent.timePassed % self.parent.gameboard.waves[waveIndex][0] == 0:
                     
                 if self.checkNextEnemy("e1", Barbarian(self.parent.gameboard.enemyPath, self)):
-                    self.parent.checkIsWaveDone()
+                    self.checkIsWaveDone()
     
                 elif self.checkNextEnemy("e2", Berserker(self.parent.gameboard.enemyPath, self)):
-                    self.parent.checkIsWaveDone()
+                    self.checkIsWaveDone()
+    
+    
+    def checkIsWaveDone(self):
+
+        waveIndex = self.parent.gameboard.currentWave - 1
+
+        if self.parent.gameboard.currentEnemy > len(self.parent.gameboard.waves[waveIndex][1]):
+            self.parent.gameboard.currentEnemy = 1
+            self.parent.gameboard.currentWave += 1
+            self.parent.waveFinishTime = self.parent.timePassed
+            self.parent.gamestats.update()
+            return True
+        else:
+            return False
     
     
     def checkNextEnemy(self, name, enemyType):
@@ -329,8 +343,7 @@ class MapView(QFrame):
                 enemy = self.parent.gameboard.enemiesSummoned[i]
                 
                 if not enemy.isFinished and not enemy.isDead:
-                    enemy.moveEnemy() # calculates the new posX and posY
-                    enemy.move(enemy.posX - enemy._picture.width() / 2, enemy.posY - enemy._picture.height() / 2) # actually moves the enemy
+                    enemy.moveEnemy()
                     
                     if enemy.checkIfFinished():
                         self.parent.gameboard.currentLives -= 1
@@ -346,10 +359,10 @@ class MapView(QFrame):
     
     def enemyClick(self, enemy):
         # Opens an info screen on the enemy
-        if self.parent.gameover == False:
+        if self.parent.gameover == False and enemy.isDead == False:
         
             if self.parent.isTowerSelected == False:
-                self.statusBarMessage("Enemy clicked")
+                # self.statusBarMessage("Enemy clicked")
                 self.enemyPopUp = QFrame()
                 self.enemyPopUp.setGeometry(500, 500, 100, 100)
             
@@ -393,8 +406,8 @@ class MapView(QFrame):
         for tower in self.parent.gameboard.towersBuild:
             
             # This is kind of a simple method of checking the firerate
-            # It could be improved, so that if the tower hasn't fired for a while and an enemy comes into it's range it shoots immediately.
-            if tower.lastShot == 0 or self.parent.timePassed - tower.lastShot >= tower.fireRate: #  or self.parent.timePassed % tower.fireRate == 0
+            # We firs check when the tower has fired it's last shot to see if it's time to shoot again
+            if tower.lastShot == 0 or self.parent.timePassed - tower.lastShot >= tower.fireRate: 
                 # We always shoot the enemy that has moved to the furthest block. If there's more than one enemy in the same block we select the one that's first in the list.
                 # Again, this method could be improved. We could check which enemy is actually furthest down the path in actual pixels.
                 i = 0
