@@ -181,8 +181,16 @@ class UserInterface(QMainWindow):
         return self._gameSpeed
 
 
+    def setGameSpeed(self, value):
+        self._gameSpeed = value
+    
+
     def getWaveFinishTime(self):
         return self._waveFinishTime
+    
+    
+    def getTimer(self):
+        return self.timer
     
 
     isTowerSelected = property(getIsTowerSelected, setIsTowerSelected)
@@ -193,7 +201,7 @@ class UserInterface(QMainWindow):
     gameboard = property(getGameboard)
     timePassed = property(getTimePassed)
     gameover = property(getGameOver)
-    gameSpeed = property(getGameSpeed)
+    gameSpeed = property(getGameSpeed, setGameSpeed)
     waveFinishTime = property(getWaveFinishTime, setWaveFinishTime)
 
 

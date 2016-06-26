@@ -397,7 +397,7 @@ class MapView(QFrame):
                 self.enemyPopUp.show()
                 doneButton.clicked.connect(self.enemyPopUp.hide)
         
-        else:
+        elif self.parent.gameover == True:
             self.statusBarMessage("The game has ended. Stop doing stuff.")
 
         
@@ -447,8 +447,8 @@ class MapView(QFrame):
                         # This method could also be improved. We should probably hit enemies that are within a certain range from the target enemy instead of being in the same block.
                         for enemy in self.parent.gameboard.enemiesSummoned:
                             if enemy != projectile.destination and enemy.currentBlock == projectile.destination.currentBlock:
-                                enemy.getHit(projectile.damage)
-                                enemy.checkIfDead()
+                                if enemy.getHit(projectile.damage):
+                                    enemy.checkIfDead()
                     
                     if projectile.destination.checkIfDead():
                         # self.statusBarMessage(projectile.destination.name + " is dead. You get " + str(projectile.destination.reward) + " coins.")
@@ -464,7 +464,7 @@ class MapView(QFrame):
         
         if self.parent.gameboard.currentWave >= len(self.parent.gameboard.waves):
             # self.statusBarMessage("Last wave!")
-            # Check how many enemies the map has in total
+            # Check how many enemies the map has in total. This should probably be an attribute that's calculated already when the GameBoard-object is made.
             totalEnemies = 0
             for wave in self.parent.gameboard.waves:
                 totalEnemies += len(wave[1])

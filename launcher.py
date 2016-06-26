@@ -84,7 +84,6 @@ class Launcher(QWidget):
         
     
     def changeGameSpeed(self, value):
-        
         self.gameSpeed = 100 - value
         
     

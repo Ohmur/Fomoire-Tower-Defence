@@ -5,10 +5,11 @@ Created on 9.4.2016
 '''
 
 import os.path
-from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber
+from PyQt5.QtWidgets import QGridLayout, QFrame, QPushButton, QLabel, QLCDNumber, QSlider
 from globals import *
 from tower import *
 from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtCore import Qt
 from PyQt5.Qt import QHBoxLayout, QVBoxLayout, QBasicTimer
 from buy_button import BuyButton
 
@@ -66,6 +67,20 @@ class BottomButtons(QFrame):
         
         hbox.addStretch()
         
+        '''
+        slider2 = QSlider(Qt.Horizontal, self)
+        slider2.setFocusPolicy(Qt.NoFocus)
+        slider2.setSliderPosition(100 - self.parent.gameSpeed)
+        #slider2.setGeometry(210, 140, 100, 20)
+        slider2.valueChanged[int].connect(self.changeGameSpeed)
+        
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(slider2)
+        hbox2.addStretch()
+        
+        self.grid.addLayout(hbox2, 0, 1)
+        '''
+        
         hbox3 = QHBoxLayout()
         vbox3 = QVBoxLayout()
         hbox3.addStretch()
@@ -81,11 +96,17 @@ class BottomButtons(QFrame):
     
         # I could add a restart button
         
-        vbox3.addWidget(self.pauseButton)
-        
+        vbox3.addWidget(self.pauseButton)      
         self.grid.addLayout(vbox3, 0,2)
         
         self.show()
+    
+    
+    def changeGameSpeed(self, value):
+        self.parent.gameSpeed = 100 - value
+        if not self.isPaused:
+            self.parent.timer.stop()
+            self.parent.timer.start(self.parent._gameSpeed, self.parent)
     
         
     def musketeerButtonClick(self):

@@ -244,7 +244,11 @@ class Enemy(QAbstractButton):
     
     
     def getHit(self, damage):
-        self._health -= damage
+        if self.isDead == False:
+            self._health -= damage
+            return True
+        else:
+            return False
         
     
     def checkIfDead(self):
