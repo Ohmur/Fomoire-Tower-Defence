@@ -1,7 +1,7 @@
 #mapinfo
 name: Battle of Mag Itha
 size: 50x26
-lives: 20
+lives: 25
 money: 1000
 towers: t1, t2
 path start: 6, 4
